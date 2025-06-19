@@ -1,0 +1,427 @@
+[1mdiff --git a/.env b/.env[m
+[1mnew file mode 100644[m
+[1mindex 0000000..5e84cdf[m
+[1m--- /dev/null[m
+[1m+++ b/.env[m
+[36m@@ -0,0 +1,5 @@[m
+[32m+[m[32mNEXT_API_MONGODB_URI_DEV=[m
+[32m+[m[32mNEXT_API_MONGODB_URI=[m
+[32m+[m[32mNEXT_API_CLOUDINARY_CLOUD_NAME=[m
+[32m+[m[32mNEXT_API_CLOUDINARY_KEY=[m
+[32m+[m[32mNEXT_API_CLOUDINARY_SECRET_KEY=[m
+\ No newline at end of file[m
+[1mdiff --git a/.gitignore b/.gitignore[m
+[1mindex 5ef6a52..772f3ca 100644[m
+[1m--- a/.gitignore[m
+[1m+++ b/.gitignore[m
+[36m@@ -31,7 +31,7 @@[m [myarn-error.log*[m
+ .pnpm-debug.log*[m
+ [m
+ # env files (can opt-in for committing if needed)[m
+[31m-.env*[m
+[32m+[m[32m.env.*[m
+ [m
+ # vercel[m
+ .vercel[m
+[1mdiff --git a/__tests__/api/product.test.ts b/__tests__/api/product.test.ts[m
+[1mnew file mode 100644[m
+[1mindex 0000000..d1fef2d[m
+[1m--- /dev/null[m
+[1m+++ b/__tests__/api/product.test.ts[m
+[36m@@ -0,0 +1,70 @@[m
+[32m+[m[32mimport mongoose from "mongoose";[m
+[32m+[m[32mimport { NextResponse } from "next/server";[m
+[32m+[m
+[32m+[m[32mimport dbConnect from "@/app/api/libs/connection";[m
+[32m+[m[32mimport { Product } from "@/app/api/models/Product";[m
+[32m+[m[32mimport { GET, POST } from "@/app/api/product/route";[m
+[32m+[m
+[32m+[m[32mjest.mock("@/app/api/libs/imageHandler", () => ({[m
+[32m+[m[32m    uploads: jest.fn().mockResolvedValue({[m
+[32m+[m[32m        secure_url: "https://fake-url.com/image.jpg",[m
+[32m+[m[32m        public_id: "products/fake-id",[m
+[32m+[m[32m    }),[m
+[32m+[m[32m}));[m
+[32m+[m
+[32m+[m[32mbeforeAll(async () => { await dbConnect(); });[m
+[32m+[m[32mafterEach(async () => { await Product.deleteMany({ name: "Jasmine Tea" }); });[m
+[32m+[m[32mafterAll(async () => { await mongoose.disconnect(); });[m
+[32m+[m
+[32m+[m[32mdescribe("GET /api/product", () => {[m
+[32m+[m[32m    it("should return a 200 status code and array of products", async () => {[m
+[32m+[m[32m        const response = await GET();[m
+[32m+[m[32m        expect(response.status).toBe(200);[m
+[32m+[m
+[32m+[m[32m        const json = await response.json();[m
+[32m+[m[32m        expect(json).toHaveProperty("status", 200);[m
+[32m+[m[32m        expect(json).toHaveProperty("message", "OK");[m
+[32m+[m[32m        expect(Array.isArray(json.data)).toBe(true);[m
+[32m+[m[32m    });[m
+[32m+[m[32m});[m
+[32m+[m
+[32m+[m[32mdescribe("POST /api/product", () => {[m
+[32m+[m[32m    it("should create product successfully", async () => {[m
+[32m+[m[32m        const fakeBuffer = Buffer.from("fake image content");[m
+[32m+[m
+[32m+[m[32m        const mockFile = {[m
+[32m+[m[32m            name: "test.jpg",[m
+[32m+[m[32m            type: "image/jpeg",[m
+[32m+[m[32m            arrayBuffer: async () => fakeBuffer,[m
+[32m+[m[32m        };[m
+[32m+[m
+[32m+[m[32m        const mockFormData = {[m
+[32m+[m[32m            get: (key: string) => {[m
+[32m+[m[32m                const values: Record<string, string | typeof mockFile> = {[m
+[32m+[m[32m                    name: "Jasmine Tea",[m
+[32m+[m[32m                    description: "Jasmine Tea with sweet sugar",[m
+[32m+[m[32m                    price: "5000",[m
+[32m+[m[32m                    stock: "100",[m
+[32m+[m[32m                    file: mockFile,[m
+[32m+[m[32m                };[m
+[32m+[m[32m                return values[key];[m
+[32m+[m[32m            },[m
+[32m+[m[32m        };[m
+[32m+[m
+[32m+[m[32m        const mockRequest = {[m
+[32m+[m[32m            formData: async () => mockFormData,[m
+[32m+[m[32m        } as unknown as Request;[m
+[32m+[m
+[32m+[m[32m        const response = await POST(mockRequest);[m
+[32m+[m[32m        expect(response).toBeInstanceOf(NextResponse);[m
+[32m+[m[32m        expect(response.status).toBe(201);[m
+[32m+[m
+[32m+[m[32m        const json = await response.json();[m
+[32m+[m[32m        expect(json).toHaveProperty("status", 201);[m
+[32m+[m[32m        expect(json).toHaveProperty("message", "Product created successfully");[m
+[32m+[m[32m        expect(json.data).toHaveProperty("name", "Jasmine Tea");[m
+[32m+[m[32m        expect(json.data).toHaveProperty("price", 5000);[m
+[32m+[m[32m        expect(json.data).toHaveProperty("stock", 100);[m
+[32m+[m[32m        expect(json.data).toHaveProperty("path");[m
+[32m+[m[32m    });[m
+[32m+[m[32m});[m
+[1mdiff --git a/app/api/libs/Response.ts b/app/api/libs/Response.ts[m
+[1mnew file mode 100644[m
+[1mindex 0000000..3526fff[m
+[1m--- /dev/null[m
+[1m+++ b/app/api/libs/Response.ts[m
+[36m@@ -0,0 +1,14 @@[m
+[32m+[m[32mimport { NextResponse } from "next/server";[m
+[32m+[m[32mimport { ResponseData } from "@/app/api/types";[m
+[32m+[m
+[32m+[m[32mconst Response = ({[m
+[32m+[m[32m    status,[m
+[32m+[m[32m    message,[m
+[32m+[m[32m    data = undefined[m
+[32m+[m[32m}: ResponseData): NextResponse => {[m
+[32m+[m[32m    return (data)[m
+[32m+[m[32m        ? NextResponse.json({ status: status, message: message, data: data, }, { status: status })[m
+[32m+[m[32m        : NextResponse.json({ status: status, message: message, }, { status: status });[m
+[32m+[m[32m};[m
+[32m+[m
+[32m+[m[32mexport default Response;[m
+\ No newline at end of file[m
+[1mdiff --git a/app/api/libs/connection.ts b/app/api/libs/connection.ts[m
+[1mnew file mode 100644[m
+[1mindex 0000000..59b9368[m
+[1m--- /dev/null[m
+[1m+++ b/app/api/libs/connection.ts[m
+[36m@@ -0,0 +1,48 @@[m
+[32m+[m[32mimport mongoose from "mongoose";[m
+[32m+[m
+[32m+[m[32minterface MongooseCache {[m
+[32m+[m[32m    conn: typeof mongoose | null;[m
+[32m+[m[32m    promise: Promise<typeof mongoose> | null;[m
+[32m+[m[32m};[m
+[32m+[m
+[32m+[m[32mdeclare global {[m
+[32m+[m[32m    var mongoose: MongooseCache | undefined;[m
+[32m+[m[32m};[m
+[32m+[m
+[32m+[m[32mconst MONGODB_URI = process.env.NODE_ENV === "development" ?[m
+[32m+[m[32m    process.env.NEXT_API_MONGODB_URI_DEV! :[m
+[32m+[m[32m    process.env.NEXT_API_MONGODB_URI!;[m
+[32m+[m
+[32m+[m[32mif (!MONGODB_URI) throw new Error("MONGODB_URI not defined");[m
+[32m+[m
+[32m+[m[32mconst globalCache = globalThis as typeof globalThis & { mongoose?: MongooseCache };[m
+[32m+[m
+[32m+[m[32mconst cached: MongooseCache = globalCache.mongoose || {[m
+[32m+[m[32m    conn: null,[m
+[32m+[m[32m    promise: null,[m
+[32m+[m[32m};[m
+[32m+[m
+[32m+[m[32masync function dbConnect(): Promise<typeof mongoose> {[m
+[32m+[m[32m    if (cached.conn) {[m
+[32m+[m[32m        console.log("🟡 MongoDB from cache");[m
+[32m+[m[32m        return cached.conn;[m
+[32m+[m[32m    };[m
+[32m+[m
+[32m+[m[32m    if (!cached.promise) {[m
+[32m+[m[32m        console.log("🔵 Connecting to MongoDB...");[m
+[32m+[m[32m        mongoose.set("debug", process.env.NODE_ENV === "development");[m
+[32m+[m
+[32m+[m[32m        cached.promise = mongoose.connect(MONGODB_URI, {[m
+[32m+[m[32m            bufferCommands: false,[m
+[32m+[m[32m        });[m
+[32m+[m[32m    };[m
+[32m+[m
+[32m+[m[32m    cached.conn = await cached.promise;[m
+[32m+[m[32m    globalCache.mongoose = cached;[m
+[32m+[m
+[32m+[m[32m    console.log("MongoDB connected!");[m
+[32m+[m
+[32m+[m[32m    return cached.conn;[m
+[32m+[m[32m};[m
+[32m+[m
+[32m+[m[32mexport default dbConnect;[m
+\ No newline at end of file[m
+[1mdiff --git a/app/api/libs/imageHandler.ts b/app/api/libs/imageHandler.ts[m
+[1mnew file mode 100644[m
+[1mindex 0000000..765fbd7[m
+[1m--- /dev/null[m
+[1m+++ b/app/api/libs/imageHandler.ts[m
+[36m@@ -0,0 +1,39 @@[m
+[32m+[m[32mimport { type UploadApiResponse, v2 as cloudinary } from "cloudinary";[m
+[32m+[m
+[32m+[m[32mcloudinary.config({[m
+[32m+[m[32m    cloud_name: process.env.NEXT_API_CLOUDINARY_CLOUD_NAME!,[m
+[32m+[m[32m    api_key: process.env.NEXT_API_CLOUDINARY_KEY!,[m
+[32m+[m[32m    api_secret: process.env.NEXT_API_CLOUDINARY_SECRET_KEY!,[m
+[32m+[m[32m});[m
+[32m+[m
+[32m+[m[32mexport const uploads = async (file: File): Promise<UploadApiResponse> => {[m
+[32m+[m[32m    try {[m
+[32m+[m[32m        const arrayBuffer = await file.arrayBuffer();[m
+[32m+[m[32m        const buffer = Buffer.from(arrayBuffer);[m
+[32m+[m
+[32m+[m[32m        const uploadResult = await new Promise<UploadApiResponse>((resolve, reject) => {[m
+[32m+[m[32m            cloudinary.uploader.upload_stream({ folder: "products" }, (err, result) => {[m
+[32m+[m[32m                if (err || !result) return reject(err);[m
+[32m+[m[32m                resolve(result);[m
+[32m+[m[32m            }).end(buffer);[m
+[32m+[m[32m        });[m
+[32m+[m
+[32m+[m[32m        if (!uploadResult || !uploadResult.secure_url || !uploadResult.public_id) {[m
+[32m+[m[32m            throw new Error("Failed to upload image");[m
+[32m+[m[32m        };[m
+[32m+[m
+[32m+[m[32m        return uploadResult;[m
+[32m+[m[32m    } catch (error: unknown) {[m
+[32m+[m[32m        const message = error instanceof Error ? error.message : "An unknown error occurred during upload";[m
+[32m+[m[32m        throw new Error(message);[m
+[32m+[m[32m    };[m
+[32m+[m[32m};[m
+[32m+[m
+[32m+[m[32mexport const destroy = async (imagePublicId: string): Promise<void> => {[m
+[32m+[m[32m    try {[m
+[32m+[m[32m        await cloudinary.uploader.destroy(imagePublicId).then(result => result);[m
+[32m+[m[32m    } catch (error: unknown) {[m
+[32m+[m[32m        const message = error instanceof Error ? error.message : "An unknown error occurred during deletion";[m
+[32m+[m[32m        throw new Error(message);[m
+[32m+[m[32m    };[m
+[32m+[m[32m};[m
+\ No newline at end of file[m
+[1mdiff --git a/app/api/middleware/productMiddleware.ts b/app/api/middleware/productMiddleware.ts[m
+[1mnew file mode 100644[m
+[1mindex 0000000..f72788f[m
+[1m--- /dev/null[m
+[1m+++ b/app/api/middleware/productMiddleware.ts[m
+[36m@@ -0,0 +1,25 @@[m
+[32m+[m[32mimport { NextRequest, NextResponse } from "next/server";[m
+[32m+[m[32mimport Response from "@/app/api/libs/Response";[m
+[32m+[m
+[32m+[m[32mexport const validateProductData = async (request: NextRequest, isPost: boolean): Promise<NextResponse | void> => {[m
+[32m+[m[32m    try {[m
+[32m+[m[32m        const formData = await request.formData();[m
+[32m+[m
+[32m+[m[32m        const file = formData.get("file") as File | null;[m
+[32m+[m[32m        const name = formData.get("name") as string | null;[m
+[32m+[m[32m        const price = Number(formData.get("price"));[m
+[32m+[m[32m        const stock = Number(formData.get("stock"));[m
+[32m+[m
+[32m+[m[32m        if (!name || !price || !stock) return Response({ status: 400, message: "All fields are required" });[m
+[32m+[m[32m        if (isNaN(price) || isNaN(stock)) return Response({ status: 400, message: "Price and stock must be numbers" });[m
+[32m+[m
+[32m+[m[32m        if (isPost) {[m
+[32m+[m[32m            if (!file || !(file instanceof File)) return Response({ status: 400, message: "File is required" });[m
+[32m+[m[32m            else if (!file.type.startsWith("image/")) return Response({ status: 400, message: "File must be an image" });[m
+[32m+[m[32m            else if (file.size > 10 * 1024 * 1024) return Response({ status: 400, message: "Image size exceeds 5MB limit" });[m
+[32m+[m[32m        };[m
+[32m+[m[32m    } catch (error: unknown) {[m
+[32m+[m[32m        const message = error instanceof Error ? error.message : "An unknown error occurred";[m
+[32m+[m[32m        return Response({ status: 500, message: message });[m
+[32m+[m[32m    };[m
+[32m+[m[32m};[m
+\ No newline at end of file[m
+[1mdiff --git a/app/api/models/Product.ts b/app/api/models/Product.ts[m
+[1mnew file mode 100644[m
+[1mindex 0000000..1894bba[m
+[1m--- /dev/null[m
+[1m+++ b/app/api/models/Product.ts[m
+[36m@@ -0,0 +1,15 @@[m
+[32m+[m[32mimport { Schema, models, model, Model } from "mongoose";[m
+[32m+[m[32mimport { IProduct } from "@/app/api/types/product";[m
+[32m+[m
+[32m+[m[32mconst productSchema = new Schema<IProduct>({[m
+[32m+[m[32m    name: { type: String, required: true },[m
+[32m+[m[32m    description: String,[m
+[32m+[m[32m    price: { type: Number, required: true },[m
+[32m+[m[32m    stock: { type: Number, default: 0 },[m
+[32m+[m[32m    path: String,[m
+[32m+[m[32m    imagePublicId: String,[m
+[32m+[m[32m}, {[m
+[32m+[m[32m    timestamps: true, versionKey: false[m
+[32m+[m[32m});[m
+[32m+[m
+[32m+[m[32mexport const Product: Model<IProduct> = models.Product || model<IProduct>("Product", productSchema);[m
+\ No newline at end of file[m
+[1mdiff --git a/app/api/product/[id]/route.ts b/app/api/product/[id]/route.ts[m
+[1mnew file mode 100644[m
+[1mindex 0000000..ed60feb[m
+[1m--- /dev/null[m
+[1m+++ b/app/api/product/[id]/route.ts[m
+[36m@@ -0,0 +1,91 @@[m
+[32m+[m[32mimport { Types } from "mongoose";[m
+[32m+[m[32mimport { NextResponse } from "next/server";[m
+[32m+[m
+[32m+[m[32mimport Response from "@/app/api/libs/Response";[m
+[32m+[m[32mimport dbConnect from "@/app/api/libs/connection";[m
+[32m+[m[32mimport { Product } from "@/app/api/models/Product";[m
+[32m+[m[32mimport { destroy, uploads } from "@/app/api/libs/imageHandler";[m
+[32m+[m
+[32m+[m[32mexport const GET = async ([m
+[32m+[m[32m    req: Request,[m
+[32m+[m[32m    context: { params: Promise<{ id: string }> }[m
+[32m+[m[32m): Promise<NextResponse> => {[m
+[32m+[m[32m    const { id } = await context.params;[m
+[32m+[m
+[32m+[m[32m    if (!Types.ObjectId.isValid(id)) {[m
+[32m+[m[32m        return Response({ status: 400, message: "Invalid product ID" });[m
+[32m+[m[32m    };[m
+[32m+[m
+[32m+[m[32m    try {[m
+[32m+[m[32m        await dbConnect();[m
+[32m+[m[32m        const product = await Product.findById(id);[m
+[32m+[m
+[32m+[m[32m        if (!product) return Response({ status: 404, message: "Product not found!" });[m
+[32m+[m[32m        return Response({ status: 200, message: "OK", data: product });[m
+[32m+[m[32m    } catch (error: unknown) {[m
+[32m+[m[32m        const message = error instanceof Error ? error.message : "Something went wrong";[m
+[32m+[m[32m        return Response({ status: 500, message: message });[m
+[32m+[m[32m    };[m
+[32m+[m[32m};[m
+[32m+[m
+[32m+[m[32mexport const PUT = async ([m
+[32m+[m[32m    req: Request,[m
+[32m+[m[32m    context: { params: Promise<{ id: string }> }[m
+[32m+[m[32m): Promise<NextResponse> => {[m
+[32m+[m[32m    const { id } = await context.params;[m
+[32m+[m
+[32m+[m[32m    try {[m
+[32m+[m[32m        const formData = await req.formData();[m
+[32m+[m[32m        const file = formData.get("file") as File | null;[m
+[32m+[m[32m        const name = formData.get("name") as string | null;[m
+[32m+[m[32m        const description = formData.get("description") as string | null;[m
+[32m+[m[32m        const price = Number(formData.get("price"));[m
+[32m+[m[32m        const stock = Number(formData.get("stock"));[m
+[32m+[m
+[32m+[m[32m        const upload = await uploads(file!);[m
+[32m+[m
+[32m+[m[32m        await dbConnect();[m
+[32m+[m[32m        const oldData = await Product.findById(id, "imagePublicId");[m
+[32m+[m[32m        const updated = await Product.findByIdAndUpdate(id, {[m
+[32m+[m[32m            name: name,[m
+[32m+[m[32m            description: description || "",[m
+[32m+[m[32m            price: price,[m
+[32m+[m[32m            stock: stock,[m
+[32m+[m[32m            path: upload.secure_url,[m
+[32m+[m[32m            imagePublicId: upload.public_id,[m
+[32m+[m[32m        },[m
+[32m+[m[32m            { new: true, runValidators: true }[m
+[32m+[m[32m        );[m
+[32m+[m
+[32m+[m[32m        if (!updated) return Response({ status: 404, message: "Product not found" });[m
+[32m+[m[32m        if (oldData && oldData.imagePublicId) await destroy(oldData.imagePublicId);[m
+[32m+[m[32m        return Response({ status: 200, message: "Updated successfully", data: updated });[m
+[32m+[m[32m    } catch (error: unknown) {[m
+[32m+[m[32m        const message = error instanceof Error ? error.message : "Something went wrong";[m
+[32m+[m[32m        return Response({ status: 500, message: message });[m
+[32m+[m[32m    };[m
+[32m+[m[32m};[m
+[32m+[m
+[32m+[m[32mexport const DELETE = async ([m
+[32m+[m[32m    req: Request,[m
+[32m+[m[32m    context: { params: Promise<{ id: string }> }[m
+[32m+[m[32m): Promise<NextResponse> => {[m
+[32m+[m[32m    const { id } = await context.params;[m
+[32m+[m
+[32m+[m[32m    if (!Types.ObjectId.isValid(id)) {[m
+[32m+[m[32m        return Response({ status: 400, message: "Invalid product ID" });[m
+[32m+[m[32m    };[m
+[32m+[m
+[32m+[m[32m    try {[m
+[32m+[m[32m        await dbConnect();[m
+[32m+[m
+[32m+[m[32m        const deleted = await Product.findByIdAndDelete(id);[m
+[32m+[m
+[32m+[m[32m        if (!deleted) return Response({ status: 404, message: "Product not found" });[m
+[32m+[m[32m        if (deleted.imagePublicId) await destroy(deleted.imagePublicId);[m
+[32m+[m[32m        return Response({ status: 200, message: "Deleted successfully" });[m
+[32m+[m[32m    } catch (error: unknown) {[m
+[32m+[m[32m        const message = error instanceof Error ? error.message : "Something went wrong";[m
+[32m+[m[32m        return Response({ status: 500, message: message });[m
+[32m+[m[32m    };[m
+[32m+[m[32m};[m
+[1mdiff --git a/app/api/product/route.ts b/app/api/product/route.ts[m
+[1mnew file mode 100644[m
+[1mindex 0000000..2f15474[m
+[1m--- /dev/null[m
+[1m+++ b/app/api/product/route.ts[m
+[36m@@ -0,0 +1,52 @@[m
+[32m+[m[32mimport { NextResponse } from "next/server";[m
+[32m+[m
+[32m+[m[32mimport Response from "@/app/api/libs/Response";[m
+[32m+[m[32mimport dbConnect from "@/app/api/libs/connection";[m
+[32m+[m[32mimport { Product } from "@/app/api/models/Product";[m
+[32m+[m[32mimport { uploads } from "@/app/api/libs/imageHandler";[m
+[32m+[m
+[32m+[m[32mexport const GET = async (): Promise<NextResponse> => {[m
+[32m+[m[32m    try {[m
+[32m+[m[32m        await dbConnect();[m
+[32m+[m[32m        const products = await Product.find();[m
+[32m+[m[32m        const product = products.map(product => product);[m
+[32m+[m[32m        return Response({ status: 200, message: "OK", data: product });[m
+[32m+[m[32m    } catch (error: unknown) {[m
+[32m+[m[32m        const message = error instanceof Error ? error.message : "Something went wrong";[m
+[32m+[m[32m        return Response({ status: 500, message: message });[m
+[32m+[m[32m    };[m
+[32m+[m[32m};[m
+[32m+[m
+[32m+[m[32mexport const POST = async (req: Request): Promise<NextResponse> => {[m
+[32m+[m[32m    try {[m
+[32m+[m[32m        const formData = await req.formData();[m
+[32m+[m
+[32m+[m[32m        const file = formData.get("file") as File | null;[m
+[32m+[m[32m        const name = formData.get("name") as string | null;[m
+[32m+[m[32m        const description = formData.get("description") as string | null;[m
+[32m+[m[32m        const price = Number(formData.get("price"));[m
+[32m+[m[32m        const stock = Number(formData.get("stock"));[m
+[32m+[m
+[32m+[m[32m        const upload = await uploads(file!);[m
+[32m+[m
+[32m+[m[32m        if (!upload?.secure_url || !upload?.public_id) {[m
+[32m+[m[32m            throw new Error("Image upload failed secure_url or public_id is missing!");[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        await dbConnect();[m
+[32m+[m
+[32m+[m[32m        const product = await Product.create({[m
+[32m+[m[32m            name: name,[m
+[32m+[m[32m            description: description || "",[m
+[32m+[m[32m            price: price,[m
+[32m+[m[32m            stock: stock,[m
+[32m+[m[32m            path: upload.secure_url,[m
+[32m+[m[32m            imagePublicId: upload.public_id,[m
+[32m+[m[32m        });[m
+[32m+[m
+[32m+[m[32m        return Response({ status: 201, message
