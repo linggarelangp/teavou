@@ -15,6 +15,10 @@ jobs:
         node-version: [20, 22]
 
     name: Node ${{ matrix.node-version }}
+
+    env:
+      MONGODB_URI: ${{ secrets.MONGODB_URI_DEV }}
+
     steps:
       - uses: actions/checkout@v3
 
