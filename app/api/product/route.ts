@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 
 import Response from "@/app/api/libs/Response";
-import dbConnect from "@/app/api/libs/connection";
+import connection from "@/app/api/libs/connection";
 import { Product } from "@/app/api/models/Product";
 import { uploads } from "@/app/api/libs/imageHandler";
 
 export const GET = async (): Promise<NextResponse> => {
     try {
-        await dbConnect();
+        await connection();
         const products = await Product.find();
         const product = products.map(product => product);
         return Response({ status: 200, message: "OK", data: product });
@@ -29,11 +29,7 @@ export const POST = async (req: Request): Promise<NextResponse> => {
 
         const upload = await uploads(file!);
 
-        if (!upload?.secure_url || !upload?.public_id) {
-            throw new Error("Image upload failed secure_url or public_id is missing!");
-        }
-
-        await dbConnect();
+        await connection();
 
         const product = await Product.create({
             name: name,

@@ -9,6 +9,7 @@ const isValidObjectId = (id: string): boolean => {
 export const middleware = async (request: NextRequest): Promise<NextResponse> => {
     const { pathname } = request.nextUrl;
     const method: string = request.method;
+    let isResponse: NextResponse;
 
     if (!pathname.startsWith("/api/product")) {
         return NextResponse.next();
@@ -16,12 +17,14 @@ export const middleware = async (request: NextRequest): Promise<NextResponse> =>
 
     try {
         if (method === "POST") {
-            await validateProductData(request, true);
+            isResponse = await validateProductData(request, true);
+            return isResponse as NextResponse;
         } else if (method === "PUT") {
             const id = request.nextUrl.pathname.split("/").pop();
             if (!id) return Response({ status: 400, message: "Product ID is required" });
             if (!isValidObjectId(id)) return Response({ status: 400, message: "Invalid product ID" });
-            await validateProductData(request, false);
+            isResponse = await validateProductData(request, false);
+            return isResponse as NextResponse;
         }
 
         return NextResponse.next();

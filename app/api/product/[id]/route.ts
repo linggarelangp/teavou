@@ -2,9 +2,11 @@ import { Types } from "mongoose";
 import { NextResponse } from "next/server";
 
 import Response from "@/app/api/libs/Response";
-import dbConnect from "@/app/api/libs/connection";
+import connection from "@/app/api/libs/connection";
 import { Product } from "@/app/api/models/Product";
 import { destroy, uploads } from "@/app/api/libs/imageHandler";
+import { UploadApiResponse } from "cloudinary";
+import { isRealFile } from "../../libs/isFile";
 
 export const GET = async (
     req: Request,
@@ -17,10 +19,10 @@ export const GET = async (
     };
 
     try {
-        await dbConnect();
+        await connection();
         const product = await Product.findById(id);
 
-        if (!product) return Response({ status: 404, message: "Product not found!" });
+        if (!product) return Response({ status: 404, message: "Product not found" });
         return Response({ status: 200, message: "OK", data: product });
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Something went wrong";
@@ -33,6 +35,8 @@ export const PUT = async (
     context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> => {
     const { id } = await context.params;
+    let newPath: string = "";
+    let newImagePublicId: string = "";
 
     try {
         const formData = await req.formData();
@@ -42,24 +46,37 @@ export const PUT = async (
         const price = Number(formData.get("price"));
         const stock = Number(formData.get("stock"));
 
-        const upload = await uploads(file!);
+        await connection();
 
-        await dbConnect();
-        const oldData = await Product.findById(id, "imagePublicId");
+        const oldData = await Product.findById(id);
+        if (!oldData) return Response({ status: 404, message: "Product not found" });
+
+        newPath = oldData.path.toString();
+        newImagePublicId = oldData.imagePublicId.toString();
+
+        if (file && (process.env.NODE_ENV !== "production" ? isRealFile(file) : file instanceof File)) {
+            const upload = await uploads(file) as UploadApiResponse;
+
+            newPath = upload.secure_url;
+            newImagePublicId = upload.public_id;
+
+            if (oldData.imagePublicId) {
+                await destroy(oldData.imagePublicId);
+            };
+        };
+
         const updated = await Product.findByIdAndUpdate(id, {
-            name: name,
+            name,
             description: description || "",
-            price: price,
-            stock: stock,
-            path: upload.secure_url,
-            imagePublicId: upload.public_id,
+            price,
+            stock,
+            path: newPath,
+            imagePublicId: newImagePublicId,
         },
             { new: true, runValidators: true }
         );
 
-        if (!updated) return Response({ status: 404, message: "Product not found" });
-        if (oldData && oldData.imagePublicId) await destroy(oldData.imagePublicId);
-        return Response({ status: 200, message: "Updated successfully", data: updated });
+        return Response({ status: 200, message: "Product Updated successfully", data: updated });
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Something went wrong";
         return Response({ status: 500, message: message });
@@ -77,7 +94,7 @@ export const DELETE = async (
     };
 
     try {
-        await dbConnect();
+        await connection();
 
         const deleted = await Product.findByIdAndDelete(id);
 
