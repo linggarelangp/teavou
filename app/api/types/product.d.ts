@@ -6,8 +6,8 @@ export interface IProduct {
     description?: string;
     price: number;
     stock: number;
-    imagePublicId?: string;
-    path?: string;
+    imagePublicId: string;
+    path: string;
     createdAt?: Date;
     updatedAt?: Date;
 };

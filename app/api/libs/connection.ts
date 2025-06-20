@@ -22,7 +22,7 @@ const cached: MongooseCache = globalCache.mongoose || {
     promise: null,
 };
 
-async function dbConnect(): Promise<typeof mongoose> {
+const connection = async (): Promise<typeof mongoose> => {
     if (cached.conn) {
         console.log("🟡 MongoDB from cache");
         return cached.conn;
@@ -45,4 +45,4 @@ async function dbConnect(): Promise<typeof mongoose> {
     return cached.conn;
 };
 
-export default dbConnect;
+export default connection;
