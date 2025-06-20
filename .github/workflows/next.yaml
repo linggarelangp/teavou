@@ -17,7 +17,7 @@ jobs:
     name: Node ${{ matrix.node-version }}
 
     env:
-      MONGODB_URI: ${{ secrets.MONGODB_URI || 'mongodb://localhost:27017/teavou' }}
+      MONGODB_URI: ${{ secrets.NEXT_API_MONGODB_URI }}
 
     steps:
       - uses: actions/checkout@v3
