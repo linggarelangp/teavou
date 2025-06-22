@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 
-import dbConnect from "@/app/api/libs/connection";
+import connection from "@/app/api/libs/connection";
 import { Product } from "@/app/api/models/Product";
 import { GET, POST } from "@/app/api/product/route";
 import { GET as GETBYID, PUT, DELETE } from "@/app/api/product/[id]/route";
@@ -15,7 +15,7 @@ jest.mock("@/app/api/libs/imageHandler", () => ({
 }));
 
 
-beforeAll(async () => { await dbConnect(); });
+beforeAll(async () => { await connection(); });
 afterEach(async () => { await Product.deleteMany({ name: "Jasmine Tea" }); });
 afterAll(async () => { await mongoose.disconnect(); });
 
