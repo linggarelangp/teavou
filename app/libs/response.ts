@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import { ResponseData } from "@/app/api/types";
+import { ResponseData } from "@/app/types";
 
-
-const Response = ({
+export const Response = ({
     status,
     message,
     data = undefined,
@@ -12,5 +11,3 @@ const Response = ({
         ? NextResponse.json({ status: status, message: message, data: data, ...rest }, { status: status })
         : NextResponse.json({ status: status, message: message, ...rest }, { status: status });
 };
-
-export default Response;

@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import Response from "@/app/api/libs/Response";
-import { validateProductData } from "@/app/api/middleware/productMiddleware";
-import { validateUserData } from "./app/api/middleware/userMiddleware";
+import { Response } from "@/app/libs/response";
+import { validateUserData, validateProductData } from "./app/validators";
 
 export const middleware = async (request: NextRequest): Promise<NextResponse> => {
     const { pathname } = request.nextUrl;
@@ -35,6 +34,6 @@ export const config = {
         "/api/product",
         "/api/product/:path*",
         "/api/user",
-        "/api/user/:path*"
+        "/api/user/:path*",
     ]
 }

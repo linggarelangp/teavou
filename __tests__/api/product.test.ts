@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 
-import connection from "@/app/api/libs/connection";
-import { Product } from "@/app/api/models/Product";
+import connection from "@/app/libs/db/connection";
+import { Product } from "@/app/models/Product";
 import { GET, POST } from "@/app/api/product/route";
 import { GET as GETBYID, PUT, DELETE } from "@/app/api/product/[id]/route";
 

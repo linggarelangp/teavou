@@ -1,12 +1,10 @@
 import { Types } from "mongoose";
 import { NextResponse } from "next/server";
+import connection from "@/app/libs/db/connection";
 
-import Response from "@/app/api/libs/Response";
-import connection from "@/app/api/libs/connection";
-
-import { IUser } from "@/app/api/types";
-import { User } from "@/app/api/models/User";
-import { comparePassword } from "@/app/api/libs/hashingPassword";
+import { IUser } from "@/app/types";
+import { User } from "@/app/models/User";
+import { comparePassword, Response } from "@/app/libs";
 
 export const GET = async (
     req: Request,

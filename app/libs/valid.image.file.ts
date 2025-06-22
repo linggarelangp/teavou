@@ -1,5 +1,3 @@
-const isFile = (file: unknown): boolean => {
+export const isValidImageFile = (file: unknown): boolean => {
     return typeof file === "object" && file !== null && "arrayBuffer" in file && "type" in file && "size" in file;
 };
-
-export default isFile;

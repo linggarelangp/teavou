@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import Response from "@/app/api/libs/Response";
+
+import { Response } from "@/app/libs";
 
 export const validateProductData = async (request: NextRequest, isPost: boolean): Promise<NextResponse> => {
     try {

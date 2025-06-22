@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
+import connection from "@/app/libs/db/connection";
 
-import Response from "@/app/api/libs/Response";
-import connection from "@/app/api/libs/connection";
-import { Product } from "@/app/api/models/Product";
-import { uploads } from "@/app/api/libs/imageHandler";
+import { Product } from "@/app/models/Product";
+import { Response } from "@/app/libs";
+import { uploads } from "@/app/libs/cloudinary.helper";
 
 export const GET = async (): Promise<NextResponse> => {
     try {

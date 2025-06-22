@@ -1,12 +1,11 @@
 import { Types } from "mongoose";
 import { NextResponse } from "next/server";
-
-import isFile from "@/app/api/libs/isFile";
-import Response from "@/app/api/libs/Response";
 import { UploadApiResponse } from "cloudinary";
-import connection from "@/app/api/libs/connection";
-import { Product } from "@/app/api/models/Product";
-import { destroy, uploads } from "@/app/api/libs/imageHandler";
+import connection from "@/app/libs/db/connection";
+
+import { Product } from "@/app/models/Product";
+import { isValidImageFile, Response } from "@/app/libs";
+import { uploads, destroy } from "@/app/libs/cloudinary.helper";
 
 export const GET = async (
     req: Request,
@@ -54,7 +53,7 @@ export const PUT = async (
         newPath = oldData.path.toString();
         newImagePublicId = oldData.imagePublicId.toString();
 
-        if (file && (process.env.NODE_ENV !== "production" ? isFile(file) : file instanceof File)) {
+        if (file && (process.env.NODE_ENV !== "production" ? isValidImageFile(file) : file instanceof File)) {
             const upload = await uploads(file) as UploadApiResponse;
 
             newPath = upload.secure_url;
