@@ -1,19 +1,19 @@
 import mongoose from "mongoose";
-import { NextResponse } from "next/server";
-
+import { NextRequest, NextResponse } from "next/server";
 import connection from "@/app/libs/db/connection";
+
+import { validateProductData } from "@/app/validators";
 import { Product } from "@/app/models/Product";
 import { GET, POST } from "@/app/api/product/route";
 import { GET as GETBYID, PUT, DELETE } from "@/app/api/product/[id]/route";
 
-jest.mock("@/app/api/libs/imageHandler", () => ({
+jest.mock("@/app/libs/cloudinary.helper", () => ({
     uploads: jest.fn().mockResolvedValue({
         secure_url: "https://fake-url.com/image.jpg",
         public_id: "products/fake-id",
     }),
     destroy: jest.fn().mockResolvedValue(true),
 }));
-
 
 beforeAll(async () => { await connection(); });
 afterEach(async () => { await Product.deleteMany({ name: "Jasmine Tea" }); });
@@ -31,37 +31,11 @@ describe("GET /api/product", () => {
         expect(json).toHaveProperty("message", "OK");
         expect(Array.isArray(json.data)).toBe(true);
     });
-
-    it("should return 404 if product not found", async () => {
-        const mockRequest = {} as unknown as Request;
-
-        const fakeId = new mongoose.Types.ObjectId().toString();
-
-        const response = await GETBYID(mockRequest, { params: mockParams(fakeId as string) });
-
-        expect(response).toBeInstanceOf(NextResponse);
-        expect(response.status).toBe(404);
-
-        const json = await response.json();
-        expect(json).toHaveProperty("status", 404);
-        expect(json).toHaveProperty("message", "Product not found");
-    });
-
-    it("should return 400 invalid product id", async () => {
-        const mockRequest = {} as unknown as Request;
-
-        const response = await GETBYID(mockRequest, { params: mockParams("invalid-product-id" as string) });
-
-        expect(response).toBeInstanceOf(NextResponse);
-        expect(response.status).toBe(400);
-
-        const json = await response.json();
-        expect(json).toHaveProperty("status", 400);
-        expect(json).toHaveProperty("message", "Invalid product ID");
-    });
 });
 
 describe("GET /api/product/[id]", () => {
+    const mockRequest = {} as unknown as Request;
+
     it("should return product successfully", async () => {
         const product = await Product.create({
             _id: new mongoose.Types.ObjectId(),
@@ -72,8 +46,6 @@ describe("GET /api/product/[id]", () => {
             path: "products/fake-id",
             imagePublicId: "products/fake-id",
         });
-
-        const mockRequest = {} as unknown as Request;
 
         const response = await GETBYID(mockRequest, { params: mockParams(product._id as string) });
 
@@ -87,34 +59,48 @@ describe("GET /api/product/[id]", () => {
         expect(json.data).toHaveProperty("price", 5000);
         expect(json.data).toHaveProperty("stock", 100);
     });
+
+    it("should return 404 if product not found", async () => {
+        const fakeId = new mongoose.Types.ObjectId().toString();
+
+        const response = await GETBYID(mockRequest, { params: mockParams(fakeId as string) });
+
+        expect(response).toBeInstanceOf(NextResponse);
+        expect(response.status).toBe(404);
+
+        const json = await response.json();
+        expect(json).toHaveProperty("status", 404);
+        expect(json).toHaveProperty("message", "Product not found");
+    });
+
+    it("should return 400 invalid product id", async () => {
+        const response = await GETBYID(mockRequest, { params: mockParams("invalid-product-id" as string) });
+
+        expect(response).toBeInstanceOf(NextResponse);
+        expect(response.status).toBe(400);
+
+        const json = await response.json();
+        expect(json).toHaveProperty("status", 400);
+        expect(json).toHaveProperty("message", "Invalid product ID");
+    });
 });
 
 describe("POST /api/product", () => {
     it("should create product successfully", async () => {
-        const fakeBuffer = Buffer.from("fake image content");
+        const formData = new FormData();
+        formData.set("name", "Jasmine Tea");
+        formData.set("price", "5000");
+        formData.set("stock", "100");
 
-        const mockFile = {
-            name: "test.jpg",
-            type: "image/jpeg",
-            arrayBuffer: async () => fakeBuffer,
-        };
+        const mockFile = new File(["dummy content"], "test.jpg", { type: "image/jpeg" });
+        formData.set("file", mockFile);
 
-        const mockFormData = {
-            get: (key: string) => {
-                const values: Record<string, string | typeof mockFile> = {
-                    name: "Jasmine Tea",
-                    description: "Jasmine Tea with sweet sugar",
-                    price: "5000",
-                    stock: "100",
-                    file: mockFile,
-                };
-                return values[key];
-            },
-        };
+        const mockRequest = { formData: async () => formData } as unknown as NextRequest;
 
-        const mockRequest = {
-            formData: async () => mockFormData,
-        } as unknown as Request;
+        const validationResponse = await validateProductData(mockRequest, true);
+        expect(validationResponse).toBeDefined();
+        expect(validationResponse).toBeInstanceOf(NextResponse);
+        expect(validationResponse.status).not.toBe(400);
 
         const response = await POST(mockRequest);
         expect(response).toBeInstanceOf(NextResponse);
@@ -128,12 +114,118 @@ describe("POST /api/product", () => {
         expect(json.data).toHaveProperty("stock", 100);
         expect(json.data).toHaveProperty("path");
     });
+
+    it("should return 400 when file is missing", async () => {
+        const formData = new FormData();
+        formData.set("name", "Jasmine Tea");
+        formData.set("price", "5000");
+        formData.set("stock", "100");
+
+        const mockRequest = { formData: async () => formData } as unknown as NextRequest;
+
+        const response = await validateProductData(mockRequest, true);
+        expect(response).toBeInstanceOf(NextResponse);
+        expect(response.status).toBe(400);
+
+        const json = await response.json();
+        expect(json).toHaveProperty("status", 400);
+        expect(json).toHaveProperty("message", "Bad Request");
+        expect(json).toHaveProperty("errors");
+        expect(Array.isArray(json.errors)).toBe(true);
+        expect(json.errors.length).toBeGreaterThan(0);
+        expect(json.errors[0]).toHaveProperty("path");
+        expect(json.errors[0]).toHaveProperty("message");
+        expect(json.errors[0].message).toBe("File is required");
+
+    });
+
+    it("should return 400 when file is not an image", async () => {
+        const formData = new FormData();
+        formData.set("name", "Jasmine Tea");
+        formData.set("price", "5000");
+        formData.set("stock", "100");
+
+        const fakeFile = new File(["hello"], "document-fake-file.pdf", { type: "application/pdf" });
+        formData.set("file", fakeFile);
+
+        const mockRequest = { formData: async () => formData } as unknown as NextRequest;
+
+        const response = await validateProductData(mockRequest, true);
+        expect(response).toBeInstanceOf(NextResponse);
+        expect(response.status).toBe(400);
+
+        const json = await response.json();
+        expect(json).toHaveProperty("status", 400);
+        expect(json).toHaveProperty("message", "Bad Request");
+        expect(json).toHaveProperty("errors");
+        expect(Array.isArray(json.errors)).toBe(true);
+        expect(json.errors.length).toBeGreaterThan(0);
+        expect(json.errors[0]).toHaveProperty("path");
+        expect(json.errors[0]).toHaveProperty("message");
+        expect(json.errors[0].message).toBe("File must be an image");
+    });
+
+    it("should return 400 when image file is too large", async () => {
+        const formData = new FormData();
+        formData.set("name", "Jasmine Tea");
+        formData.set("price", "5000");
+        formData.set("stock", "100");
+
+        const mockFile = new File(["a".repeat(1024 * 1024 * 6)], "test-large.jpg", { type: "image/jpeg" });
+        formData.set("file", mockFile);
+
+        const mockRequest = { formData: async () => formData } as unknown as NextRequest;
+
+        const response = await validateProductData(mockRequest, true);
+        expect(response).toBeInstanceOf(NextResponse);
+        expect(response.status).toBe(400);
+
+        const json = await response.json();
+        expect(json).toHaveProperty("status", 400);
+        expect(json).toHaveProperty("message", "Bad Request");
+        expect(json).toHaveProperty("errors");
+        expect(Array.isArray(json.errors)).toBe(true);
+        expect(json.errors.length).toBeGreaterThan(0);
+        expect(json.errors[0]).toHaveProperty("path");
+        expect(json.errors[0]).toHaveProperty("message");
+        expect(json.errors[0].message).toBe("Image size exceeds 5MB limit");
+    });
+
+    it("should return 400 when request body is empty", async () => {
+        const mockRequest = { formData: async () => new FormData() } as unknown as NextRequest;
+
+        const response = await validateProductData(mockRequest, true);
+        expect(response).toBeInstanceOf(NextResponse);
+        expect(response.status).toBe(400);
+
+        const json = await response.json();
+        expect(json).toHaveProperty("status", 400);
+        expect(json).toHaveProperty("message", "Request body is required");
+    });
 });
 
 
 describe("PUT /api/product", () => {
-    it("should update product successfully", async () => {
+    it("should return 400 invalid product id", async () => {
+        const formData = new FormData();
+        formData.set("name", "Updated Jasmine Tea");
+        formData.set("description", "Updated Description");
+        formData.set("price", "3000");
+        formData.set("stock", "80");
 
+        const mockRequest = { formData: async () => formData, } as unknown as NextRequest;
+
+        const response = await PUT(mockRequest, { params: mockParams("invalid-product-id" as string) });
+
+        expect(response).toBeInstanceOf(NextResponse);
+        expect(response.status).toBe(400);
+
+        const json = await response.json();
+        expect(json).toHaveProperty("status", 400);
+        expect(json).toHaveProperty("message", "Invalid product ID");
+    });
+
+    it("should update product successfully", async () => {
         const product = await Product.create({
             _id: new mongoose.Types.ObjectId(),
             name: "Jasmine Tea",
@@ -144,25 +236,20 @@ describe("PUT /api/product", () => {
             imagePublicId: "products/fake-id",
         });
 
-        const mockFormData = {
-            get: (key: string) => {
-                const values: Record<string, string | null | File> = {
-                    name: "Updated Jasmine Tea",
-                    description: "Updated Description",
-                    price: "3000",
-                    stock: "80",
-                    file: null,
-                };
-                return values[key];
-            },
-        };
+        const formData = new FormData();
+        formData.set("name", "Updated Jasmine Tea");
+        formData.set("description", "Updated Description");
+        formData.set("price", "3000");
+        formData.set("stock", "80");
 
-        const mockRequest = {
-            formData: async () => mockFormData,
-        } as unknown as Request;
+        const mockRequest = { formData: async () => formData, } as unknown as NextRequest;
+
+        const validationResponse = await validateProductData(mockRequest, false);
+        expect(validationResponse).toBeDefined();
+        expect(validationResponse).toBeInstanceOf(NextResponse);
+        expect(validationResponse.status).not.toBe(400);
 
         const response = await PUT(mockRequest, { params: mockParams(product._id as string) });
-
         expect(response).toBeInstanceOf(NextResponse);
         expect(response.status).toBe(200);
 
@@ -185,34 +272,23 @@ describe("PUT /api/product", () => {
             imagePublicId: "products/old-id",
         });
 
-        const fakeBuffer = Buffer.from("fake image content");
+        const formData = new FormData();
+        formData.set("name", "Updated Jasmine Tea with Image");
+        formData.set("description", "Updated with new image");
+        formData.set("price", "7000");
+        formData.set("stock", "120");
 
-        const mockFile = {
-            name: "test.jpg",
-            type: "image/jpeg",
-            size: 1024 * 1024,
-            arrayBuffer: async () => fakeBuffer,
-        };
+        const mockFile = new File(["dummy content"], "test-put.jpg", { type: "image/jpeg" });
+        formData.set("file", mockFile);
 
-        const mockFormData = {
-            get: (key: string) => {
-                const values: Record<string, string | typeof mockFile> = {
-                    name: "Updated Jasmine Tea with Image",
-                    description: "Updated with new image",
-                    price: "7000",
-                    stock: "120",
-                    file: mockFile,
-                };
-                return values[key];
-            },
-        };
+        const mockRequest = { formData: async () => formData, } as unknown as NextRequest;
 
-        const mockRequest = {
-            formData: async () => mockFormData,
-        } as unknown as Request;
+        const validationResponse = await validateProductData(mockRequest, false);
+        expect(validationResponse).toBeDefined();
+        expect(validationResponse).toBeInstanceOf(NextResponse);
+        expect(validationResponse.status).not.toBe(400);
 
         const response = await PUT(mockRequest, { params: Promise.resolve({ id: product._id.toString() }) });
-
         expect(response).toBeInstanceOf(NextResponse);
         expect(response.status).toBe(200);
 
@@ -228,21 +304,13 @@ describe("PUT /api/product", () => {
     });
 
     it("should return 404 if product updated not found", async () => {
-        const mockFormData = {
-            get: (key: string) => {
-                const values: Record<string, string | null> = {
-                    name: "Updated Jasmine Tea",
-                    description: "Updated Description",
-                    price: "3000",
-                    stock: "80",
-                };
-                return values[key];
-            },
-        };
+        const formData = new FormData();
+        formData.set("name", "Updated Jasmine Tea");
+        formData.set("description", "Updated Description");
+        formData.set("price", "3000");
+        formData.set("stock", "80");
 
-        const mockRequest = {
-            formData: async () => mockFormData,
-        } as unknown as Request;
+        const mockRequest = { formData: async () => formData, } as unknown as NextRequest;
 
         const response = await PUT(mockRequest, { params: mockParams(new mongoose.Types.ObjectId().toString()) });
 
@@ -252,6 +320,59 @@ describe("PUT /api/product", () => {
         const json = await response.json();
         expect(json).toHaveProperty("status", 404);
         expect(json).toHaveProperty("message", "Product not found");
+    });
+
+    it("should return 400 when file is not an image", async () => {
+        const formData = new FormData();
+        formData.set("name", "Updated Jasmine Tea");
+        formData.set("price", "5000");
+        formData.set("stock", "100");
+
+        const fakeFile = new File(["hello"], "document-fake-file.pdf", { type: "application/pdf" });
+        formData.set("file", fakeFile);
+
+        const mockRequest = { formData: async () => formData, } as unknown as NextRequest;
+
+        const response = await validateProductData(mockRequest, false);
+        expect(response).toBeInstanceOf(NextResponse);
+        expect(response.status).toBe(400);
+
+        const json = await response.json();
+
+        expect(json).toHaveProperty("status", 400);
+        expect(json).toHaveProperty("message", "Bad Request");
+        expect(json).toHaveProperty("errors");
+        expect(Array.isArray(json.errors)).toBe(true);
+        expect(json.errors.length).toBeGreaterThan(0);
+        expect(json.errors[0]).toHaveProperty("path");
+        expect(json.errors[0]).toHaveProperty("message");
+        expect(json.errors[0].message).toBe("File must be an image");
+    });
+
+    it("should return 400 when image file is too large", async () => {
+        const formData = new FormData();
+        formData.set("name", "Updated Jasmine Tea");
+        formData.set("price", "5000");
+        formData.set("stock", "100");
+
+        const mockFile = new File(["a".repeat(1024 * 1024 * 6)], "test-large.jpg", { type: "image/jpeg" });
+        formData.set("file", mockFile);
+
+        const mockRequest = { formData: async () => formData, } as unknown as NextRequest;
+
+        const response = await validateProductData(mockRequest, false);
+        expect(response).toBeInstanceOf(NextResponse);
+        expect(response.status).toBe(400);
+
+        const json = await response.json();
+        expect(json).toHaveProperty("status", 400);
+        expect(json).toHaveProperty("message", "Bad Request");
+        expect(json).toHaveProperty("errors");
+        expect(Array.isArray(json.errors)).toBe(true);
+        expect(json.errors.length).toBeGreaterThan(0);
+        expect(json.errors[0]).toHaveProperty("path");
+        expect(json.errors[0]).toHaveProperty("message");
+        expect(json.errors[0].message).toBe("Image size exceeds 5MB limit");
     });
 });
 
@@ -289,5 +410,16 @@ describe("DELETE /api/product", () => {
         expect(json).toHaveProperty("status", 404);
         expect(json).toHaveProperty("message", "Product not found");
     });
-});
 
+    it("should return 400 invalid product id", async () => {
+        const mockRequest = {} as unknown as Request;
+        const response = await DELETE(mockRequest, { params: mockParams("invalid-product-id" as string) });
+
+        expect(response).toBeInstanceOf(NextResponse);
+        expect(response.status).toBe(400);
+
+        const json = await response.json();
+        expect(json).toHaveProperty("status", 400);
+        expect(json).toHaveProperty("message", "Invalid product ID");
+    });
+});

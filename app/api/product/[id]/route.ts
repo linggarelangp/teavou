@@ -4,7 +4,7 @@ import { UploadApiResponse } from "cloudinary";
 import connection from "@/app/libs/db/connection";
 
 import { Product } from "@/app/models/Product";
-import { isValidImageFile, Response } from "@/app/libs";
+import { Response } from "@/app/libs";
 import { uploads, destroy } from "@/app/libs/cloudinary.helper";
 
 export const GET = async (
@@ -37,6 +37,10 @@ export const PUT = async (
     let newPath: string = "";
     let newImagePublicId: string = "";
 
+    if (!Types.ObjectId.isValid(id)) {
+        return Response({ status: 400, message: "Invalid product ID" });
+    };
+
     try {
         const formData = await req.formData();
         const file = formData.get("file") as File | null;
@@ -53,7 +57,7 @@ export const PUT = async (
         newPath = oldData.path.toString();
         newImagePublicId = oldData.imagePublicId.toString();
 
-        if (file && (process.env.NODE_ENV !== "production" ? isValidImageFile(file) : file instanceof File)) {
+        if (file && (file instanceof File)) {
             const upload = await uploads(file) as UploadApiResponse;
 
             newPath = upload.secure_url;

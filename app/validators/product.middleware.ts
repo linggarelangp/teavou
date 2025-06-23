@@ -1,26 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { Response } from "@/app/libs";
+import { productCreateSchema, productUpdateSchema } from "@/app/libs/schemas/product.schemas";
 
 export const validateProductData = async (request: NextRequest, isPost: boolean): Promise<NextResponse> => {
     try {
         const formData = await request.formData();
 
-        const file = formData.get("file") as File | null;
-        const name = formData.get("name") as string | null;
-        const price = Number(formData.get("price"));
-        const stock = Number(formData.get("stock"));
+        if (!formData || [...formData.keys()].length === 0)
+            return Response({ status: 400, message: "Request body is required" });
 
-        if (!name || !price || !stock) return Response({ status: 400, message: "All fields are required" });
-        if (isNaN(price) || isNaN(stock)) return Response({ status: 400, message: "Price and stock must be numbers" });
+        const product = {
+            name: formData.get("name") as string | null,
+            price: Number(formData.get("price") ?? ""),
+            stock: Number(formData.get("stock") ?? ""),
+            file: formData.get("file") as File | null,
+        }
 
-        if (isPost) {
-            if (!file || !(file instanceof File)) return Response({ status: 400, message: "File is required" });
-            else if (!file.type.startsWith("image/")) return Response({ status: 400, message: "File must be an image" });
-            else if (file.size > 10 * 1024 * 1024) return Response({ status: 400, message: "Image size exceeds 5MB limit" });
-        };
+        const parseResult = isPost
+            ? productCreateSchema.safeParse(product)
+            : productUpdateSchema.safeParse(product);
 
-        return NextResponse.next();
+        if (parseResult.success) return NextResponse.next();
+        const errors = parseResult.error.errors.map(err => ({
+            path: err.path,
+            message: err.message
+        }));
+        return Response({ status: 400, message: "Bad Request", errors });
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "An unknown error occurred";
         return Response({ status: 500, message: message });

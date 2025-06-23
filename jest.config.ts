@@ -4,10 +4,10 @@ const config: Config = {
   clearMocks: true,
   collectCoverage: true,
   coverageProvider: "v8",
+  testEnvironment: 'jsdom',
   projects: [
     {
       displayName: 'api',
-      testEnvironment: 'node',
       testMatch: ['<rootDir>/__tests__/api/**/*.test.ts'],
       moduleNameMapper: { "^@/(.*)$": "<rootDir>/$1" },
       setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
@@ -15,7 +15,6 @@ const config: Config = {
     },
     {
       displayName: 'react',
-      testEnvironment: 'jsdom',
       testMatch: ['<rootDir>/__tests__/components/**/*.test.ts'],
       transform: {
         '^.+\\.tsx?$': 'ts-jest',
