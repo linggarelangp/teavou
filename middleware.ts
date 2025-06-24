@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { Response } from "@/app/libs/response";
-import { validateUserData, validateProductData } from "./app/validators";
+import { validateUserData, validateProductData } from "@/app/validators";
 
 export const middleware = async (request: NextRequest): Promise<NextResponse> => {
     const { pathname } = request.nextUrl;
@@ -11,7 +11,7 @@ export const middleware = async (request: NextRequest): Promise<NextResponse> =>
     try {
         switch (true) {
             case pathname.startsWith("/api/product") && ["POST", "PUT"].includes(method): {
-                isResponse = await validateProductData(request, true);
+                isResponse = await validateProductData(request, method === "POST" ? true : false);
                 return isResponse;
             }
             case pathname.startsWith("/api/user") && ["POST", "PUT"].includes(method): {
