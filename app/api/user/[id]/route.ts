@@ -1,31 +1,25 @@
 import { Types } from "mongoose";
 import { NextResponse } from "next/server";
-import connection from "@/app/libs/db/connection";
 
-import { IUser } from "@/app/types";
-import { User } from "@/app/models/User";
-import { comparePassword, Response } from "@/app/libs";
+import { Response } from "@/app/libs";
+import { UserPayload } from "@/app/types";
+import ApiError from "@/app/libs/api.error";
+import { deleteUser, getUserById, updateUser } from "@/app/services/user.services";
 
 export const GET = async (
     req: Request,
     context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> => {
-    const { id } = await context.params;
-
-    if (!Types.ObjectId.isValid(id)) {
-        return Response({ status: 400, message: "Invalid User ID" });
-    };
-
     try {
-        await connection();
-        const user = await User.findById(id)
-            .select("-password")
-            .lean();
+        const { id } = await context.params;
 
-        if (!user) return Response({ status: 404, message: "User not found" });
+        if (!Types.ObjectId.isValid(id)) return Response({ status: 400, message: "Invalid User ID" });
+
+        const user = await getUserById(id);
         return Response({ status: 200, message: "OK", data: user });
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Something went wrong";
+        if (error instanceof ApiError) return Response({ status: error.status, message: message });
         return Response({ status: 500, message: message });
     };
 };
@@ -34,29 +28,21 @@ export const PUT = async (
     req: Request,
     context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> => {
-    const { id } = await context.params;
-    const { name, email, password } = await req.json();
-
-    if (!Types.ObjectId.isValid(id)) {
-        return Response({ status: 400, message: "Invalid User ID" });
-    };
-
     try {
-        await connection();
+        const { id } = await context.params;
+        const { name, email, password } = await req.json();
 
-        const user = await User.findById(id, "_id password");
-        if (!user) return Response({ status: 404, message: "User not found" });
+        if (!Types.ObjectId.isValid(id)) {
+            return Response({ status: 400, message: "Invalid User ID" });
+        };
 
-        const isPasswordProvided = await comparePassword(password, user.password);
-        if (!isPasswordProvided) return Response({ status: 400, message: "Incorrect password" });
+        const payload: UserPayload = { name, email, password };
 
-        const updatesUser: Partial<IUser> = { name, email };
-
-        const updatedUser = await User.findByIdAndUpdate(id, updatesUser, { new: true, runValidators: true });
-
-        return Response({ status: 200, message: "User Updated successfully", data: updatedUser });
+        const updated = await updateUser(id, payload);
+        return Response({ status: 200, message: "User Updated successfully", data: updated });
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Something went wrong";
+        if (error instanceof ApiError) return Response({ status: error.status, message: message });
         return Response({ status: 500, message: message });
     };
 };
@@ -65,21 +51,18 @@ export const DELETE = async (
     req: Request,
     context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> => {
-    const { id } = await context.params;
-
-    if (!Types.ObjectId.isValid(id)) {
-        return Response({ status: 400, message: "Invalid User ID" });
-    };
-
     try {
-        await connection();
+        const { id } = await context.params;
 
-        const deleted = await User.findByIdAndDelete(id);
+        if (!Types.ObjectId.isValid(id)) {
+            return Response({ status: 400, message: "Invalid User ID" });
+        };
 
-        if (!deleted) return Response({ status: 404, message: "User not found" });
+        await deleteUser(id);
         return Response({ status: 200, message: "User deleted successfully" });
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Something went wrong";
+        if (error instanceof ApiError) return Response({ status: error.status, message: message });
         return Response({ status: 500, message: message });
     };
 };

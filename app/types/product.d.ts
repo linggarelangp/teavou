@@ -12,6 +12,17 @@ export interface IProduct {
     updatedAt?: Date;
 };
 
+export interface ProductPayload {
+    name: string;
+    description?: string;
+    price: number;
+    stock: number;
+}
+
+export interface CreateProductPayload extends ProductPayload { file: File; }
+
+export interface UpdateProductPayload extends ProductPayload { file?: File | null; }
+
 export interface UploadProduct {
     file: File;
     name: string;

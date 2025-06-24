@@ -9,3 +9,10 @@ export interface IUser {
     createdAt?: Date;
     updatedAt?: Date;
 };
+
+export interface UserPayload {
+    name: string;
+    email: string;
+    password: string;
+    role?: "user" | "admin";
+}

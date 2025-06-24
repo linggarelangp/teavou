@@ -114,6 +114,34 @@ describe("POST /api/user", () => {
         expect(json.data).toHaveProperty("role", "user");
     });
 
+    it("should return 400 when user already exists", async () => {
+        const mockRequest = {
+            json: jest.fn().mockResolvedValue(createMockUser)
+        } as unknown as NextRequest;
+
+        await User.create({
+            _id: new mongoose.Types.ObjectId(),
+            name: "Test User",
+            email: "test.user@test.com",
+            password: "TestUserPassword123#$",
+            role: "user",
+        });
+
+        const validationResponse = await validateUserData(mockRequest);
+        expect(validationResponse).toBeDefined();
+        expect(validationResponse).toBeInstanceOf(NextResponse);
+        expect(validationResponse.status).not.toBe(400);
+
+        const response = await POST(mockRequest);
+
+        expect(response).toBeInstanceOf(NextResponse);
+        expect(response.status).toBe(400);
+
+        const json = await response.json();
+        expect(json).toHaveProperty("status", 400);
+        expect(json).toHaveProperty("message", "User already exists with this email");
+    });
+
     it("should return 400 when request body is empty", async () => {
         const mockRequest = {
             json: jest.fn().mockResolvedValue(undefined)
