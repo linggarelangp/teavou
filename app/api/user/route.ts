@@ -17,13 +17,9 @@ export const GET = async (): Promise<NextResponse> => {
 };
 
 export const POST = async (req: Request): Promise<NextResponse> => {
-    const { name, email, password, role = "user" } = await req.json();
-
-    if (!name || !email || !password) {
-        return Response({ status: 400, message: "Name, email, and password are required" });
-    }
-
     try {
+        const { name, email, password, role = "user" } = await req.json();
+
         const hashedPassword: string = await hashPassword(password);
 
         await connection();

@@ -16,8 +16,10 @@ export const userSchema = z.object({
     password: z.string({
         required_error: 'Password is required!',
         invalid_type_error: 'Password must be a string'
-    }).min(6, {
-        message: "Password must be at least 6 characters"
+    }).min(8, {
+        message: "Password must be at least 8 characters"
+    }).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/, {
+        message: "Password must contain uppercase, lowercase, number, and special character"
     }),
     role: z.enum(["user", "admin"]).optional(),
 });

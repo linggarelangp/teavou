@@ -4,13 +4,13 @@ import { Response } from "@/app/libs";
 import { userSchema } from "@/app/libs/schemas/user.schemas";
 
 export const validateUserData = async (req: NextRequest): Promise<NextResponse> => {
-    const body = await req.json();
-
-    if (!body) {
-        return Response({ status: 400, message: "Request body is required" });
-    }
-
     try {
+        const body = await req.json();
+
+        if (!body || Object.keys(body).length === 0) {
+            return Response({ status: 400, message: "Request body is required" });
+        }
+
         const parseResult = userSchema.safeParse(body);
 
         if (parseResult.success) return NextResponse.next();

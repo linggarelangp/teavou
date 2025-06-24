@@ -68,7 +68,7 @@ export const DELETE = async (
     const { id } = await context.params;
 
     if (!Types.ObjectId.isValid(id)) {
-        return Response({ status: 400, message: "Invalid product ID" });
+        return Response({ status: 400, message: "Invalid User ID" });
     };
 
     try {
@@ -77,7 +77,7 @@ export const DELETE = async (
         const deleted = await User.findByIdAndDelete(id);
 
         if (!deleted) return Response({ status: 404, message: "User not found" });
-        return Response({ status: 200, message: "Account has been deleted" });
+        return Response({ status: 200, message: "User deleted successfully" });
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Something went wrong";
         return Response({ status: 500, message: message });
