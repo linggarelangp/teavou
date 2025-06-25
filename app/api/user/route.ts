@@ -1,13 +1,18 @@
 import { NextResponse } from "next/server";
 
 import { Response } from "@/app/libs";
-import { createUser, getUsers } from "@/app/services/user.services";
 import { UserPayload } from "@/app/types";
 import ApiError from "@/app/libs/api.error";
+import { cookiesValidation } from "@/app/libs/validation.headers";
+import { createUser, getUsers } from "@/app/services/user.services";
 
-export const GET = async (): Promise<NextResponse> => {
+export const GET = async (req: Request): Promise<NextResponse> => {
     try {
+        const headers = req.headers.get("cookie") || "";
+        cookiesValidation(headers);
+
         const users = await getUsers();
+
         return Response({ status: 200, message: "OK", data: users });
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Something went wrong";

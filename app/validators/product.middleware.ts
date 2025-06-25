@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { Response } from "@/app/libs";
-import { productCreateSchema, productUpdateSchema } from "@/app/libs/schemas/product.schemas";
+import { productCreateSchemas, productUpdateSchemas } from "@/app/libs/schemas/product.schemas";
 
 export const validateProductData = async (request: NextRequest, isPost: boolean): Promise<NextResponse> => {
     try {
@@ -18,8 +18,8 @@ export const validateProductData = async (request: NextRequest, isPost: boolean)
         }
 
         const parseResult = isPost
-            ? productCreateSchema.safeParse(product)
-            : productUpdateSchema.safeParse(product);
+            ? productCreateSchemas.safeParse(product)
+            : productUpdateSchemas.safeParse(product);
 
         if (parseResult.success) return NextResponse.next();
         const errors = parseResult.error.errors.map(err => ({

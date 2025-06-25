@@ -41,7 +41,12 @@ export const login = async (payload: Partial<UserPayload>): Promise<IUser> => {
 
         const isPasswordValid = await comparePassword(payload.password, user.password);
         if (!isPasswordValid) throw new ApiError(400, "Incorrect password");
-        return user;
+        return {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+        } as IUser;
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Something went wrong";
         if (error instanceof ApiError) throw new ApiError(error.status, message);

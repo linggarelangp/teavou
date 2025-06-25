@@ -5,6 +5,7 @@ import { Response } from "@/app/libs";
 import { UpdateProductPayload } from "@/app/types";
 import { deleteProduct, getProductById, updateProduct } from "@/app/services/product.services";
 import ApiError from "@/app/libs/api.error";
+import { cookiesValidation } from "@/app/libs/validation.headers";
 
 export const GET = async (
     req: Request,
@@ -29,6 +30,9 @@ export const PUT = async (
     context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> => {
     try {
+        const headers = req.headers.get("cookie") || "";
+        cookiesValidation(headers);
+
         const { id } = await context.params;
 
         if (!Types.ObjectId.isValid(id)) return Response({ status: 400, message: "Invalid product ID" });
@@ -56,6 +60,9 @@ export const DELETE = async (
     context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> => {
     try {
+        const headers = req.headers.get("cookie") || "";
+        cookiesValidation(headers);
+
         const { id } = await context.params;
 
         if (!Types.ObjectId.isValid(id)) return Response({ status: 400, message: "Invalid product ID" });

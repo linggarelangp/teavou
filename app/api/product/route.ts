@@ -4,6 +4,7 @@ import { Response } from "@/app/libs";
 import { createProduct, getProducts } from "@/app/services/product.services";
 import { CreateProductPayload } from "@/app/types";
 import ApiError from "@/app/libs/api.error";
+import { cookiesValidation } from "@/app/libs/validation.headers";
 
 export const GET = async (): Promise<NextResponse> => {
     try {
@@ -18,6 +19,9 @@ export const GET = async (): Promise<NextResponse> => {
 
 export const POST = async (req: Request): Promise<NextResponse> => {
     try {
+        const headers = req.headers.get("cookie") || "";
+        cookiesValidation(headers);
+
         const formData = await req.formData();
 
         const file = formData.get("file") as File;

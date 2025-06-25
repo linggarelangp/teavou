@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { Response } from "@/app/libs";
-import { userSchema } from "@/app/libs/schemas/user.schemas";
+import { userSchemas } from "@/app/libs/schemas/user.schemas";
 
 export const validateUserData = async (req: NextRequest): Promise<NextResponse> => {
     try {
@@ -11,7 +11,7 @@ export const validateUserData = async (req: NextRequest): Promise<NextResponse> 
             return Response({ status: 400, message: "Request body is required" });
         }
 
-        const parseResult = userSchema.safeParse(body);
+        const parseResult = userSchemas.safeParse(body);
 
         if (parseResult.success) return NextResponse.next();
         const errors = parseResult.error.errors.map(err => ({

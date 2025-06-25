@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { Response } from "@/app/libs/response";
-import { validateUserData, validateProductData } from "@/app/validators";
+import { validateUserData, validateProductData, validateLoginData, validateRegisterData } from "@/app/validators";
 
 export const middleware = async (request: NextRequest): Promise<NextResponse> => {
     const { pathname } = request.nextUrl;
@@ -18,8 +18,17 @@ export const middleware = async (request: NextRequest): Promise<NextResponse> =>
                 isResponse = await validateUserData(request);
                 return isResponse;
             }
-            default:
+            case pathname.startsWith("/api/auth/register"): {
+                isResponse = await validateLoginData(request);
+                return isResponse;
+            }
+            case pathname.startsWith("/api/auth/login"): {
+                isResponse = await validateRegisterData(request);
+                return isResponse;
+            }
+            default: {
                 return NextResponse.next();
+            }
         }
 
     } catch (error: unknown) {
@@ -35,5 +44,6 @@ export const config = {
         "/api/product/:path*",
         "/api/user",
         "/api/user/:path*",
+        "/api/auth"
     ]
 }

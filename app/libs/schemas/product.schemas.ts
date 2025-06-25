@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { validateImageFile, validateImageFileUpdate } from "@/app/libs/valid.image.file";
 
-const productBaseSchema = z.object({
+const productBaseSchemas = z.object({
     name: z.string({
         required_error: "Product name is required!",
         invalid_type_error: "Product name must be a string"
@@ -20,10 +20,10 @@ const productBaseSchema = z.object({
     }).nonnegative({ message: "Product stock cannot be negative" })
 });
 
-export const productCreateSchema = productBaseSchema.extend({
+export const productCreateSchemas = productBaseSchemas.extend({
     file: z.instanceof(File, { message: "File is required" }).superRefine(validateImageFile)
 });
 
-export const productUpdateSchema = productBaseSchema.partial().extend({
+export const productUpdateSchemas = productBaseSchemas.partial().extend({
     file: z.instanceof(File).optional().nullable().superRefine(validateImageFileUpdate)
 });
