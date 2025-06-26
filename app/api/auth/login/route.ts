@@ -17,7 +17,7 @@ export const POST = async (req: Request): Promise<NextResponse> => {
             user,
             process.env.NEXT_API_JWT_SECRET_TOKEN!,
         );
-        const response = Response({ status: 200, message: "Login successfully" });
+        const response = Response({ status: 200, message: "Login successfully", data: user });
 
         response.cookies.set("token", token, {
             httpOnly: true,

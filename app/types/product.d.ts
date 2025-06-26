@@ -12,6 +12,18 @@ export interface IProduct {
     updatedAt?: Date;
 };
 
+export interface Product {
+    _id: string;
+    name: string;
+    description?: string;
+    price: number;
+    stock: number;
+    imagePublicId: string;
+    path: string;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
 export interface ProductPayload {
     name: string;
     description?: string;
