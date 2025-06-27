@@ -7,8 +7,8 @@ import { MdOutlineDashboard } from "react-icons/md";
 import { GrTransaction } from "react-icons/gr";
 import { RiSettings4Line } from "react-icons/ri";
 import { TbReportAnalytics } from "react-icons/tb";
-import { AiOutlineUser, AiOutlineHeart } from "react-icons/ai";
-import { FiMessageSquare, FiShoppingCart } from "react-icons/fi";
+import { AiOutlineUser } from "react-icons/ai";
+import { FiMessageSquare } from "react-icons/fi";
 
 import Image from "next/image";
 type Menu = {
@@ -20,13 +20,11 @@ type Menu = {
 
 const menus: Menu[] = [
     { name: "dashboard", link: "/admin", icon: MdOutlineDashboard },
-    { name: "user", link: "#", icon: AiOutlineUser },
+    { name: "user", link: "/admin/user", icon: AiOutlineUser },
     { name: "product", link: "/admin/product", icon: FiMessageSquare },
     { name: "analytics", link: "#", icon: TbReportAnalytics, margin: true },
     { name: "Transaction", link: "/admin/transaction", icon: GrTransaction },
-    { name: "Cart", link: "/admin/cart", icon: FiShoppingCart },
-    { name: "Saved", link: "#", icon: AiOutlineHeart, margin: true },
-    { name: "Setting", link: "#", icon: RiSettings4Line },
+    { name: "Setting", link: "#", icon: RiSettings4Line, margin: true },
 ]
 
 const Sidebar = ({ data }: { data: { name: string, email: string, } }): JSX.Element => {
@@ -53,7 +51,7 @@ const Sidebar = ({ data }: { data: { name: string, email: string, } }): JSX.Elem
                     <Link
                         key={i}
                         href={menu.link}
-                        className={`hover:bg-lime-400 ${menu.margin && "mt-5"} group flex items-center text-sm  gap-3.5 font-medium p-2 rounded-md ${pathname === menu.link && "bg-lime-400"}`}
+                        className={`hover:bg-lime-400 ${menu.margin && "mt-7"} group flex items-center text-sm  gap-3.5 font-medium p-2 rounded-md ${pathname === menu.link && "bg-lime-400"}`}
                     >
                         <div>
                             {React.createElement(menu?.icon, { size: "20" })}

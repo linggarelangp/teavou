@@ -1,7 +1,8 @@
 import { parse } from "cookie";
 
-import { verifyToken } from "@/app/libs/tokenizing";
 import ApiError from "@/app/libs/api.error";
+
+import { verifyToken } from "@/app/libs/tokenizing";
 
 export const cookiesValidation = (value: string): void => {
     if (value === "") throw new ApiError(401, "Unauthorized");

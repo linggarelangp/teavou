@@ -1,7 +1,8 @@
-import { Response } from "@/app/libs";
-import { loginSchemas, registerSchemas } from "../libs/schemas/auth.schemas";
-import { UserPayload } from "../types";
 import { NextResponse } from "next/server";
+
+import { Response } from "@/app/libs";
+import { UserPayload } from "@/app/types";
+import { loginSchemas, registerSchemas } from "@/app/libs/schemas/auth.schemas";
 
 export const validateLoginData = async (req: Request): Promise<NextResponse> => {
     try {

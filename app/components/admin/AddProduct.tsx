@@ -1,7 +1,6 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { Product } from "@/app/types";
 import { useRouter } from "next/navigation";
 import { JSX, useState } from "react";
 
@@ -17,8 +16,7 @@ type FormValues = {
     price: number;
     stock: number;
 };
-
-const UpdateProduct = ({ data }: { data: Product }): JSX.Element => {
+const AddProduct = (): JSX.Element => {
     const router = useRouter();
     const [file, setFile] = useState<File | null>(null);
 
@@ -27,22 +25,32 @@ const UpdateProduct = ({ data }: { data: Product }): JSX.Element => {
         handleSubmit,
         formState: { errors },
     } = useForm<FormValues>({
-        defaultValues: data,
+        defaultValues: undefined,
     });
 
     const onSubmit = async (formData: FormValues) => {
+
+        if (!file || !(file instanceof File)) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Please upload a product image.",
+            });
+            return;
+        }
+
         const body = new FormData();
         body.append("name", formData.name);
         body.append("description", formData.description || "");
         body.append("price", String(formData.price));
         body.append("stock", String(formData.stock));
-        if (file) body.append("file", file);
+        body.append("file", file);
 
         console.log("Form Data:", formData);
 
         try {
-            const response = await fetch(`/api/product/${formData._id}`, {
-                method: "PUT",
+            const response = await fetch(`/api/product/`, {
+                method: "POST",
                 body,
             });
 
@@ -50,7 +58,7 @@ const UpdateProduct = ({ data }: { data: Product }): JSX.Element => {
 
             Swal.fire({
                 icon: "success",
-                title: "Data updated successfully",
+                title: "Data Created successfully",
                 confirmButtonText: "OK",
             }).then(() => {
                 router.push("/admin/product");
@@ -64,16 +72,8 @@ const UpdateProduct = ({ data }: { data: Product }): JSX.Element => {
             });
         }
     };
-
     return (
         <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data" className="space-y-5 mt-10">
-            <Input
-                label="Product ID"
-                type="text"
-                {...register("_id")}
-                disabled
-            />
-
             <Input
                 label="Product Name"
                 type="text"
@@ -116,7 +116,7 @@ const UpdateProduct = ({ data }: { data: Product }): JSX.Element => {
                     className="btn btn-info flex-1"
                     type="submit"
                 >
-                    Update
+                    Add
                 </button>
 
                 <button
@@ -127,7 +127,7 @@ const UpdateProduct = ({ data }: { data: Product }): JSX.Element => {
                 </button>
             </div>
         </form>
-    );
-};
+    )
+}
 
-export default UpdateProduct;
+export default AddProduct

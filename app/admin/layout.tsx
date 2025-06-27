@@ -1,5 +1,5 @@
 import React, { JSX } from "react";
-import Sidebar from "@/app/components/admin/Sidebar";
+import Sidebar from "@/app/components/navigation/sidebar/Sidebar";
 import { cookieStore } from "@/app/libs/cookies.store";
 import { Metadata } from "next";
 

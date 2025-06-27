@@ -1,6 +1,6 @@
-import { cookies } from "next/headers";
-import Link from "next/link";
 import { JSX } from "react";
+import Link from "next/link";
+import { cookies } from "next/headers";
 import { FaCartShopping, FaUserLarge } from "react-icons/fa6";
 
 const NavAuth = async (): Promise<JSX.Element> => {

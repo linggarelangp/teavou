@@ -15,7 +15,7 @@ export const validateProductData = async (request: NextRequest, isPost: boolean)
             price: Number(formData.get("price") ?? ""),
             stock: Number(formData.get("stock") ?? ""),
             file: formData.get("file") as File | null,
-        }
+        };
 
         const parseResult = isPost
             ? productCreateSchemas.safeParse(product)

@@ -9,7 +9,7 @@ export const validateUserData = async (req: NextRequest): Promise<NextResponse> 
 
         if (!body || Object.keys(body).length === 0) {
             return Response({ status: 400, message: "Request body is required" });
-        }
+        };
 
         const parseResult = userSchemas.safeParse(body);
 

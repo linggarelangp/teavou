@@ -1,9 +1,11 @@
 import { JSX } from "react";
-import NavbarList from "@/app/components/Navbar/NavbarList";
-import { NavbarListData } from "@/app/types/navbar";
-import NavAuth from "@/app/components/Navbar/NavAuth";
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
+
+import NavAuth from "@/app/components/navigation/Navbar/NavAuth";
+import NavbarList from "@/app/components/navigation/Navbar/NavbarList";
+
+import { NavbarListData } from "@/app/types/navbar";
 
 const navbarList: NavbarListData[] = [
     {

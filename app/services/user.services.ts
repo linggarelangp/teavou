@@ -1,8 +1,10 @@
 import connection from "@/app/libs/db/connection";
-import { User } from "../models/User";
-import { IUser, UserPayload } from "../types";
-import ApiError from "../libs/api.error";
-import { comparePassword, hashPassword } from "../libs";
+
+import ApiError from "@/app/libs/api.error";
+
+import { User } from "@/app/models/User";
+import { IUser, UserPayload } from "@/app/types";
+import { comparePassword, hashPassword } from "@/app/libs";
 
 export const getUsers = async (): Promise<IUser[]> => {
     try {
@@ -26,6 +28,23 @@ export const getUserById = async (id: string): Promise<IUser> => {
         };
 
         return user;
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Something went wrong";
+        if (error instanceof ApiError) throw new ApiError(error.status, message);
+        throw new Error(message);
+    };
+};
+
+export const getUserByRole = async (role: string): Promise<IUser[]> => {
+    try {
+        await connection();
+        const users = await User.find({ role }).select("-password").lean();
+
+        if (users.length === 0) {
+            throw new ApiError(404, "No users found with this role");
+        };
+
+        return users;
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Something went wrong";
         if (error instanceof ApiError) throw new ApiError(error.status, message);

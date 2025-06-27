@@ -1,7 +1,8 @@
 import connection from "@/app/libs/db/connection";
 
-import { User } from "@/app/models/User";
 import ApiError from "@/app/libs/api.error";
+
+import { User } from "@/app/models/User";
 import { IUser, UserPayload } from "@/app/types";
 import { comparePassword, hashPassword } from "@/app/libs";
 

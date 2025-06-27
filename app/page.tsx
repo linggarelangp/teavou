@@ -1,6 +1,6 @@
 import { JSX } from "react";
 
-import Navbar from "@/app/components/Navbar/Navbar";
+import Navbar from "@/app/components/navigation/Navbar/Navbar";
 import Footer from "@/app/components/footer/Footer";
 
 const Home = (): JSX.Element => {

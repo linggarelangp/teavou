@@ -1,6 +1,7 @@
 import connection from "@/app/libs/db/connection";
 
 import ApiError from "@/app/libs/api.error";
+
 import { Product } from "@/app/models/Product";
 import { destroy, uploads } from "@/app/libs/cloudinary.helper";
 import { IProduct, CreateProductPayload, UpdateProductPayload } from "@/app/types";
@@ -67,9 +68,12 @@ export const updateProduct = async (id: string, payload: UpdateProductPayload): 
             throw new ApiError(404, "Product not found");
         }
 
-        existingProduct.name = payload.name ?? existingProduct.name;
-        existingProduct.price = payload.price ?? existingProduct.price;
-        existingProduct.stock = payload.stock ?? existingProduct.stock;
+        console.log("Payload:", payload);
+
+        existingProduct.name = payload.name ? payload.name : existingProduct.name;
+        existingProduct.description = payload.description ? payload.description : existingProduct.description;
+        existingProduct.price = payload.price ? payload.price : existingProduct.price;
+        existingProduct.stock = payload.stock ? payload.stock : existingProduct.stock;
 
         if (payload.file) {
             const upload = await uploads(payload.file);
@@ -79,7 +83,6 @@ export const updateProduct = async (id: string, payload: UpdateProductPayload): 
 
         await existingProduct.save();
         return existingProduct;
-
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Something went wrong";
         if (error instanceof ApiError) throw new ApiError(error.status, message);
