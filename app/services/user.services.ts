@@ -4,7 +4,7 @@ import ApiError from "@/app/libs/api.error";
 
 import { User } from "@/app/models/User";
 import { IUser, UserPayload } from "@/app/types";
-import { comparePassword, hashPassword } from "@/app/libs";
+import { comparePassword, hashPassword } from "@/app/libs/hashing";
 
 export const getUsers = async (): Promise<IUser[]> => {
     try {

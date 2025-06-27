@@ -6,7 +6,7 @@ import { validateUserData } from "@/app/validators";
 import { User } from "@/app/models/User";
 import { GET, POST } from "@/app/api/user/route";
 import { DELETE, GET as GET_USER, PUT, } from "@/app/api/user/[id]/route"
-import { hashPassword } from "@/app/libs";
+import { hashPassword } from "@/app/libs/hashing";
 
 beforeAll(async () => { await connection() });
 afterEach(async () => { await User.deleteMany({ name: "Test User" }); });

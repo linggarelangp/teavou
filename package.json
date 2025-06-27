@@ -14,7 +14,7 @@
     "test:force": "jest --detectOpenHandles --verbose --forceExit"
   },
   "dependencies": {
-    "bcryptjs": "^3.0.2",
+    "bcrypt": "^6.0.0",
     "cloudinary": "^2.6.1",
     "cookie": "^1.0.2",
     "jsonwebtoken": "^9.0.2",
