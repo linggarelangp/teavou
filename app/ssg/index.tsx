@@ -1,13 +1,13 @@
 import { Product, User } from "@/app/types";
 import { cookies } from "next/headers";
 
-const baseUrl = (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test")
-    ? process.env.NEXT_PUBLIC_BASE_URL_DEV
-    : process.env.NEXT_PUBLIC_BASE_URL;
+const baseUrl: string = process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test"
+    ? process.env.NEXT_PUBLIC_BASE_URL_DEV!
+    : process.env.NEXT_PUBLIC_BASE_URL!;
 
 export const getProductData = async (revalidate: number): Promise<Product[]> => {
     try {
-        const response: Response = await fetch(`${baseUrl || process.env.NEXT_PUBLIC_BASE_URL as string}/api/product`, {
+        const response: Response = await fetch(`${baseUrl}/api/product`, {
             method: "GET",
             next: { revalidate: revalidate },
         });
@@ -29,7 +29,7 @@ export const getProductData = async (revalidate: number): Promise<Product[]> => 
 
 export const getProductById = async (id: string, revalidate: number): Promise<Product | null> => {
     try {
-        const response: Response = await fetch(`${baseUrl || process.env.NEXT_PUBLIC_BASE_URL as string}/api/product/${id}`, {
+        const response: Response = await fetch(`${baseUrl}/api/product/${id}`, {
             method: "GET",
             next: { revalidate: revalidate },
         });
@@ -52,7 +52,7 @@ export const getUsersData = async (revalidate: number): Promise<User[]> => {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 
-    const response: Response = await fetch(`${baseUrl || process.env.NEXT_PUBLIC_BASE_URL as string}/api/user`, {
+    const response: Response = await fetch(`${baseUrl}/api/user`, {
         method: "GET",
         next: { revalidate: revalidate },
         headers: {
@@ -66,7 +66,7 @@ export const getUsersData = async (revalidate: number): Promise<User[]> => {
 };
 
 export const getUserByRole = async (role: string, revalidate: number): Promise<User[]> => {
-    const response: Response = await fetch(`${baseUrl || process.env.NEXT_PUBLIC_BASE_URL as string}/api/user/role/${role}`, {
+    const response: Response = await fetch(`${baseUrl}/api/user/role/${role}`, {
         method: "GET",
         next: { revalidate: revalidate },
     });
