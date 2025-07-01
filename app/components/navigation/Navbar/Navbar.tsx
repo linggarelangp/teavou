@@ -13,8 +13,8 @@ const navbarList: NavbarListData[] = [
         name: "Home",
     },
     {
-        path: "/products",
-        name: "Products",
+        path: "/product",
+        name: "Product",
     },
     {
         path: "/about",
