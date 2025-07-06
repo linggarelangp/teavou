@@ -1,9 +1,6 @@
 import { JSX } from "react";
 
-import FooterShopInfo from "./FooterShopInfo";
-import FooterAccount from "./FooterAccount";
-import FooterContact from "./FooterContact";
-import FooterDescription from "./FooterDescription";
+import { FooterDescription, FooterShopInfo, FooterAccount, FooterContact } from "@/app/components/Footer";
 
 const FooterBody = (): JSX.Element => {
     return (

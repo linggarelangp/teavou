@@ -1,37 +1,39 @@
 import { NextResponse } from "next/server";
 
-import { Response } from "@/app/libs";
-import { UserPayload } from "@/app/types";
-import ApiError from "@/app/libs/api.error";
-import { cookiesValidation } from "@/app/libs/validation.headers";
-import { createUser, getUsers } from "@/app/services/user.services";
+import { IUser } from "@/app/types";
+import { ApiError } from "@/app/libs";
+import { createUser, getUsers } from "@/app/services";
 
-export const GET = async (req: Request): Promise<NextResponse> => {
+export const GET = async (): Promise<NextResponse> => {
     try {
-        const headers = req.headers.get("cookie") || "";
-        cookiesValidation(headers);
-
-        const users = await getUsers();
-
-        return Response({ status: 200, message: "OK", data: users });
+        const users: IUser[] = await getUsers();
+        return NextResponse.json({ success: true, status: 200, data: users }, { status: 200 });
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Something went wrong";
-        if (error instanceof ApiError) return Response({ status: error.status, message: message });
-        return Response({ status: 500, message: message });
+
+        if (error instanceof ApiError) {
+            return NextResponse.json({ success: false, status: error.status, error: error.message }, { status: error.status });
+        };
+
+        return NextResponse.json({ success: false, status: 500, error: message }, { status: 500 });
     };
 };
 
-export const POST = async (req: Request): Promise<NextResponse> => {
+export const POST = async (request: Request): Promise<NextResponse> => {
     try {
-        const { name, email, password, role = "user" } = await req.json();
+        const { name, email, password, role = "user" } = await request.json();
 
-        const payload: UserPayload = { name, email, password, role };
+        const data: IUser = { name, email, password, role };
 
-        const user = await createUser(payload);
-        return Response({ status: 201, message: "Created", data: user });
+        const user: IUser = await createUser(data);
+        return NextResponse.json({ success: true, status: 201, data: user }, { status: 201 });
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Something went wrong";
-        if (error instanceof ApiError) return Response({ status: error.status, message: message });
-        return Response({ status: 500, message: message });
+
+        if (error instanceof ApiError) {
+            return NextResponse.json({ success: false, status: error.status, error: message }, { status: error.status });
+        };
+
+        return NextResponse.json({ success: false, status: 500, error: message }, { status: 500 });
     };
 };

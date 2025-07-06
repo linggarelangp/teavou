@@ -1,9 +1,7 @@
 import { JSX } from "react";
 
-import Navbar from "@/app/components/navigation/Navbar/Navbar";
-import Footer from "@/app/components/footer/Footer";
-import { CiInstagram } from "react-icons/ci";
-
+import { Navbar } from "@/app/components/navigation";
+import { Footer } from "@/app/components/Footer";
 
 const About = (): JSX.Element => {
     return (
@@ -47,10 +45,6 @@ const About = (): JSX.Element => {
                                             <p>10:00 AM - 08:00 PM</p>
                                             <p>10:00 AM - 08:00 PM</p>
                                             <p>10:00 AM - 08:00 PM</p>
-                                        </div>
-                                        <div>
-                                            <h5 className="text-black text-lg font-bold tracking-widest">Social</h5>
-                                            <CiInstagram className="w-32 h-32" />
                                         </div>
                                     </div>
                                 </div>

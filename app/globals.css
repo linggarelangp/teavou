@@ -20,7 +20,28 @@
   }
 }
 
+html {
+  -ms-overflow-style: none;
+  scrollbar-width: none; 
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+.custom-strike::after {
+  content: "";
+  position: absolute;
+  top: 30%;
+  left: 0;
+  width: 80%;
+  border-top: 1.2px solid #ef4444;
+  transform: rotate(5deg);
+  transform-origin: left center;
 }

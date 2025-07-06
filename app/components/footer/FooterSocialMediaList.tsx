@@ -1,8 +1,7 @@
 import { JSX } from "react";
 import Link from "next/link";
-import { FooterSocialMediaData } from "@/app/types/footer";
 
-const FooterSocialMediaList = ({ name, link, icon }: FooterSocialMediaData): JSX.Element => {
+const FooterSocialMediaList = ({ name, link, icon }: { name: string, link: string, icon: JSX.Element }): JSX.Element => {
     return (
         <li
             data-testid={name}

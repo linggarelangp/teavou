@@ -1,13 +1,11 @@
 import { JSX } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { getUserFromToken } from "@/app/libs/node/auth";
 
-import NavAuth from "@/app/components/navigation/Navbar/NavAuth";
-import NavbarList from "@/app/components/navigation/Navbar/NavbarList";
+import { NavAuth, NavbarList, NavbarCollapse } from "@/app/components/navigation";
 
-import { NavbarListData } from "@/app/types/navbar";
-
-const navbarList: NavbarListData[] = [
+const navbarList: { path: string; name: string; }[] = [
     {
         path: "/",
         name: "Home",
@@ -20,15 +18,17 @@ const navbarList: NavbarListData[] = [
         path: "/about",
         name: "About",
     },
+];
 
-]
+const Navbar = async (): Promise<JSX.Element> => {
+    const token = await getUserFromToken();
 
-const Navbar = (): JSX.Element => {
     return (
         <nav className="block w-full px-4 py-3 mx-auto shadow-md rounded-md lg:px-8">
             <div className="container flex flex-wrap items-center justify-between mx-auto">
                 <Link
                     href="/"
+                    className="hidden lg:block"
                 >
                     <Image
                         src="/img/logo.png"
@@ -44,7 +44,7 @@ const Navbar = (): JSX.Element => {
                         daa-testid="navbar-list"
                         className="flex flex-col gap-2 mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6"
                     >
-                        {navbarList.map((item: NavbarListData, index: number) => (
+                        {navbarList.map((item, index: number) => (
                             <NavbarList
                                 key={index}
                                 path={item.path}
@@ -54,12 +54,14 @@ const Navbar = (): JSX.Element => {
                     </ul>
                 </div>
 
-                <div className="flex items-center space-x-5 cursor-pointer">
-                    <NavAuth />
+                <div className="hidden lg:flex lg:items-center lg:space-x-5 cursor-pointer">
+                    <NavAuth token={token} />
                 </div>
             </div>
-        </nav>
-    )
-}
 
-export default Navbar
+            <NavbarCollapse token={token} />
+        </nav>
+    );
+};
+
+export default Navbar;
