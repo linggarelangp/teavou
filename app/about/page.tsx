@@ -1,9 +1,8 @@
 import { JSX } from "react";
 
-import Navbar from "@/app/components/navigation/Navbar/Navbar";
-import Footer from "@/app/components/footer/Footer";
+import { Navbar } from "@/app/components/navigation";
+import { Footer } from "@/app/components/Footer";
 import { CiInstagram } from "react-icons/ci";
-
 
 const About = (): JSX.Element => {
     return (
