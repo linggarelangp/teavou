@@ -14,7 +14,7 @@ export const createProduct = async (payload: CreateProductPayload): Promise<IPro
             name: payload.name,
             description: payload.description || "",
             price: payload.price,
-            path: upload.secure_url,
+            imageUrl: upload.secure_url,
             imagePublicId: upload.public_id,
         });
 
