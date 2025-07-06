@@ -1,68 +1,74 @@
 import { Types } from "mongoose";
 import { NextResponse } from "next/server";
 
-import { Response } from "@/app/libs";
-import { UserPayload } from "@/app/types";
-import ApiError from "@/app/libs/api.error";
-import { deleteUser, getUserById, updateUser } from "@/app/services/user.services";
+import { ApiError } from "@/app/libs";
+import { IUser } from "@/app/types";
+import { deleteUser, getUserById, updateUser } from "@/app/services";
 
-export const GET = async (
-    req: Request,
-    context: { params: Promise<{ id: string }> }
-): Promise<NextResponse> => {
+type Params = { params: Promise<{ id: string }>; };
+
+export const GET = async (_: Request, context: Params): Promise<NextResponse> => {
     try {
         const { id } = await context.params;
-
-        if (!Types.ObjectId.isValid(id)) return Response({ status: 400, message: "Invalid User ID" });
-
-        const user = await getUserById(id);
-        return Response({ status: 200, message: "OK", data: user });
-    } catch (error: unknown) {
-        const message = error instanceof Error ? error.message : "Something went wrong";
-        if (error instanceof ApiError) return Response({ status: error.status, message: message });
-        return Response({ status: 500, message: message });
-    };
-};
-
-export const PUT = async (
-    req: Request,
-    context: { params: Promise<{ id: string }> }
-): Promise<NextResponse> => {
-    try {
-        const { id } = await context.params;
-        const { name, email, password } = await req.json();
 
         if (!Types.ObjectId.isValid(id)) {
-            return Response({ status: 400, message: "Invalid User ID" });
+            return NextResponse.json({ success: false, status: 400, error: "Invalid user ID" }, { status: 400 });
         };
 
-        const payload: UserPayload = { name, email, password };
-
-        const updated = await updateUser(id, payload);
-        return Response({ status: 200, message: "User Updated successfully", data: updated });
+        const user: IUser = await getUserById(id);
+        return NextResponse.json({ success: true, status: 200, data: user }, { status: 200 });
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Something went wrong";
-        if (error instanceof ApiError) return Response({ status: error.status, message: message });
-        return Response({ status: 500, message: message });
+
+        if (error instanceof ApiError) {
+            return NextResponse.json({ success: false, status: error.status, error: message }, { status: error.status });
+        };
+
+        return NextResponse.json({ success: false, status: 500, error: message }, { status: 500 });
     };
 };
 
-export const DELETE = async (
-    req: Request,
-    context: { params: Promise<{ id: string }> }
-): Promise<NextResponse> => {
+export const PUT = async (request: Request, context: Params): Promise<NextResponse> => {
+    try {
+        const { id } = await context.params;
+        const { name, email, password } = await request.json();
+
+        if (!Types.ObjectId.isValid(id)) {
+            return NextResponse.json({ success: false, status: 400, error: "Invalid user ID" }, { status: 400 });
+        };
+
+        const data: IUser = { name, email, password };
+
+        const updated: IUser = await updateUser(id, data);
+        return NextResponse.json({ success: true, status: 200, data: updated }, { status: 200 });
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Something went wrong";
+
+        if (error instanceof ApiError) {
+            return NextResponse.json({ success: false, status: error.status, error: message }, { status: error.status });
+        };
+
+        return NextResponse.json({ success: false, status: 500, error: message }, { status: 500 });
+    };
+};
+
+export const DELETE = async (_: Request, context: Params): Promise<NextResponse> => {
     try {
         const { id } = await context.params;
 
         if (!Types.ObjectId.isValid(id)) {
-            return Response({ status: 400, message: "Invalid User ID" });
+            return NextResponse.json({ success: false, status: 400, error: "Invalid user ID" }, { status: 400 });
         };
 
         await deleteUser(id);
-        return Response({ status: 200, message: "User deleted successfully" });
+        return NextResponse.json({ success: true, status: 200, message: "User deleted successfully" }, { status: 200 });
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Something went wrong";
-        if (error instanceof ApiError) return Response({ status: error.status, message: message });
-        return Response({ status: 500, message: message });
+
+        if (error instanceof ApiError) {
+            return NextResponse.json({ success: false, status: error.status, error: message }, { status: error.status });
+        };
+
+        return NextResponse.json({ success: false, status: 500, error: message }, { status: 500 });
     };
 };

@@ -1,9 +1,8 @@
-import { FooterListData } from "@/app/types/footer";
-import Link from "next/link";
 import { JSX } from "react";
+import Link from "next/link";
 
 
-const footerList: FooterListData[] = [
+const footerList: { name: string, link: string }[] = [
     {
         name: "About Us",
         link: "#",
@@ -36,7 +35,7 @@ const FooterShopInfo = (): JSX.Element => {
             <h1 className="text-2xl pb-2 lg:pb-5">Shop Info</h1>
 
             <ul className="space-y-2 text-gray-300">
-                {footerList.map((item: FooterListData, index: number) => (
+                {footerList.map((item, index: number) => (
                     <li
                         key={index}
                         className="font-extralight hover:text-white"

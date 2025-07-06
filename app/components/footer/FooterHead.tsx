@@ -1,10 +1,9 @@
 import React, { JSX } from "react";
-import FooterSocialMediaList from "./FooterSocialMediaList";
-
 import { FaInstagram, FaXTwitter, FaFacebookF } from "react-icons/fa6";
-import { FooterSocialMediaData } from "@/app/types/footer";
 
-const footerSocialMedia: FooterSocialMediaData[] = [
+import FooterSocialMediaList from "@/app/components/Footer/FooterSocialMediaList";
+
+const footerSocialMedia: { name: string, link: string, icon: JSX.Element }[] = [
     {
         name: "Facebook",
         link: "https://www.facebook.com/",
@@ -32,7 +31,7 @@ const FooterHead = (): JSX.Element => {
                 </div>
 
                 <ul className="flex justify-center items-center space-x-2 lg:space-x-4 pr-0 cursor-pointer">
-                    {footerSocialMedia.map((item: FooterSocialMediaData, index: number) => (
+                    {footerSocialMedia.map((item, index: number) => (
                         <FooterSocialMediaList
                             key={index}
                             name={item.name}

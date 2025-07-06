@@ -1,34 +1,35 @@
-import { Response } from "@/app/libs";
-import { UserPayload } from "@/app/types";
 import { NextResponse } from "next/server";
-import ApiError from "@/app/libs/api.error";
-import { login } from "@/app/services/auth.services";
-import { generateToken } from "@/app/libs/tokenizing";
 
-export const POST = async (req: Request): Promise<NextResponse> => {
+import { IUser } from "@/app/types";
+import { validateUser } from "@/app/services";
+import { ApiError, generateToken } from "@/app/libs";
+
+export const POST = async (request: Request): Promise<NextResponse> => {
     try {
-        const { email, password } = await req.json();
+        const { email, password } = await request.json();
 
-        const payload: Partial<UserPayload> = { email, password };
+        const user: Partial<IUser> = await validateUser(email, password);
 
-        const user = await login(payload);
+        const token: string = await generateToken(user);
 
-        const token = generateToken(
-            user,
-            process.env.NEXT_API_JWT_SECRET_TOKEN!,
-        );
-        const response = Response({ status: 200, message: "Login successfully", data: user });
+        const response = NextResponse.json({ success: true, status: 200, data: user }, { status: 200 });
 
         response.cookies.set("token", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: true,
             sameSite: "lax",
+            path: "/",
+            maxAge: 60 * 60 * 24 * 7,
         });
 
         return response;
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Something went wrong";
-        if (error instanceof ApiError) return Response({ status: error.status, message: message });
-        return Response({ status: 500, message: message });
+
+        if (error instanceof ApiError) {
+            return NextResponse.json({ success: false, status: error.status, error: message }, { status: error.status });
+        }
+
+        return NextResponse.json({ success: false, status: 500, error: message }, { status: 500 });
     };
-}
+};

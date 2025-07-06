@@ -1,42 +1,37 @@
+import { ApiError } from "@/app/libs";
+import { createProduct, getProducts } from "@/app/services/productServices";
+import { CreateProductPayload } from "@/app/types/product";
 import { NextResponse } from "next/server";
-
-import { Response } from "@/app/libs";
-import { createProduct, getProducts } from "@/app/services/product.services";
-import { CreateProductPayload } from "@/app/types";
-import ApiError from "@/app/libs/api.error";
-import { cookiesValidation } from "@/app/libs/validation.headers";
 
 export const GET = async (): Promise<NextResponse> => {
     try {
         const product = await getProducts();
-        return Response({ status: 200, message: "OK", data: product });
+        return NextResponse.json({ success: true, status: 200, data: product }, { status: 200 });
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Something went wrong";
-        if (error instanceof ApiError) return Response({ status: error.status, message: message });
-        return Response({ status: 500, message: message });
+
+        if (error instanceof ApiError) return NextResponse.json({ success: false, status: error.status, error: message }, { status: error.status });
+        return NextResponse.json({ success: false, status: 500, error: message }, { status: 500 });
     };
 };
 
-export const POST = async (req: Request): Promise<NextResponse> => {
+export const POST = async (request: Request): Promise<NextResponse> => {
     try {
-        const headers = req.headers.get("cookie") || "";
-        cookiesValidation(headers);
-
-        const formData = await req.formData();
+        const formData = await request.formData();
 
         const file = formData.get("file") as File;
         const name = formData.get("name") as string;
         const description = formData.get("description") as string | "";
         const price = Number(formData.get("price"));
-        const stock = Number(formData.get("stock"));
 
-        const payload: CreateProductPayload = { file, name, description, price, stock }
+        const data: CreateProductPayload = { name, description, price, file };
 
-        const product = await createProduct(payload);
-        return Response({ status: 201, message: "Product created successfully", data: product });
+        const product = await createProduct(data);
+        return NextResponse.json({ success: true, status: 201, data: product }, { status: 201 });
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Something went wrong";
-        if (error instanceof ApiError) return Response({ status: error.status, message: message });
-        return Response({ status: 500, message: message });
+
+        if (error instanceof ApiError) return NextResponse.json({ success: false, status: error.status, error: message }, { status: error.status });
+        return NextResponse.json({ success: false, status: 500, error: message }, { status: 500 });
     };
 };

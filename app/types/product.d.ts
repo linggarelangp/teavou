@@ -1,44 +1,30 @@
-import { type Types } from "mongoose";
-
 export interface IProduct {
-    _id?: Types.ObjectId | string;
+    _id?: string;
     name: string;
     description?: string;
     price: number;
-    stock: number;
+    imageUrl: string;
     imagePublicId: string;
-    path: string;
     createdAt?: Date;
     updatedAt?: Date;
 };
-
-export interface Product {
-    _id: string;
-    name: string;
-    description?: string;
-    price: number;
-    stock: number;
-    imagePublicId: string;
-    path: string;
-    createdAt?: Date;
-    updatedAt?: Date;
-}
 
 export interface ProductPayload {
     name: string;
     description?: string;
     price: number;
-    stock: number;
 }
 
 export interface CreateProductPayload extends ProductPayload { file: File; }
 
 export interface UpdateProductPayload extends ProductPayload { file?: File | null; }
 
-export interface UploadProduct {
-    file: File;
+export interface ProductData {
+    ID: string;
     name: string;
-    description?: string | null;
+    description?: string;
     price: number;
-    stock: number;
+    image: string;
+    createdAt?: Date;
+    updatedAt?: Date;
 };

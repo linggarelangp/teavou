@@ -1,8 +1,6 @@
 import { JSX } from "react";
 
-import FooterHead from "@/app/components/footer/FooterHead";
-import FooterBody from "@/app/components/footer/FooterBody";
-import FooterEnd from "@/app/components/footer/FooterEnd";
+import { FooterHead, FooterBody, FooterEnd } from "@/app/components/Footer";
 
 const Footer = (): JSX.Element => {
     return (

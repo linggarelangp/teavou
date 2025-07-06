@@ -1,33 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import React, { JSX } from "react";
-import { usePathname } from "next/navigation";
-import { MdOutlineDashboard } from "react-icons/md";
-import { GrTransaction } from "react-icons/gr";
-import { RiSettings4Line } from "react-icons/ri";
-import { TbReportAnalytics } from "react-icons/tb";
-import { AiOutlineUser } from "react-icons/ai";
-import { FiMessageSquare } from "react-icons/fi";
-
 import Image from "next/image";
-type Menu = {
-    name: string;
-    link: string;
-    icon: React.ElementType;
-    margin?: boolean;
-}
+import React, { JSX } from "react";
+import { IconType } from "react-icons";
+import { usePathname } from "next/navigation";
 
-const menus: Menu[] = [
-    { name: "dashboard", link: "/admin", icon: MdOutlineDashboard },
-    { name: "user", link: "/admin/user", icon: AiOutlineUser },
-    { name: "product", link: "/admin/product", icon: FiMessageSquare },
-    { name: "analytics", link: "#", icon: TbReportAnalytics, margin: true },
-    { name: "Transaction", link: "/admin/transaction", icon: GrTransaction },
-    { name: "Setting", link: "#", icon: RiSettings4Line, margin: true },
-]
+import { BiLogOut } from "react-icons/bi";
+import { GrTransaction } from "react-icons/gr";
+import { AiOutlineUser } from "react-icons/ai";
+import { RiSettings4Line } from "react-icons/ri";
+import { FiMessageSquare } from "react-icons/fi";
+import { MdOutlineDashboard } from "react-icons/md";
+import { UserPayload } from "@/app/types";
 
-const Sidebar = ({ data }: { data: { name: string, email: string, } }): JSX.Element => {
+const menus: {
+    name: string,
+    link: string,
+    icon: IconType,
+    margin?: boolean
+}[] = [
+        { name: "dashboard", link: "/admin", icon: MdOutlineDashboard },
+        { name: "user", link: "/admin/user", icon: AiOutlineUser },
+        { name: "product", link: "/admin/product", icon: FiMessageSquare },
+        { name: "Transaction", link: "/admin/transaction", icon: GrTransaction },
+        { name: "Setting", link: "#", icon: RiSettings4Line },
+        { name: "Logout", link: "/logout", icon: BiLogOut, margin: true },
+    ]
+
+const Sidebar = ({ data }: { data: UserPayload | null }): JSX.Element => {
     const pathname = usePathname();
 
     return (
@@ -41,8 +42,8 @@ const Sidebar = ({ data }: { data: { name: string, email: string, } }): JSX.Elem
                     priority={true}
                     className="w-20 h-20 mb-3 rounded-full object-cover"
                 />
-                <h1 className="text-lg font-semibold tracking-wide">Hi, {data.name}</h1>
-                <p className="text-sm font-thin">{data.email}</p>
+                <h1 className="text-lg font-semibold tracking-wide">Hi, {data?.name}</h1>
+                <p className="text-sm font-thin">{data?.email}</p>
             </div>
             <hr className="mb-5" />
 
@@ -51,6 +52,7 @@ const Sidebar = ({ data }: { data: { name: string, email: string, } }): JSX.Elem
                     <Link
                         key={i}
                         href={menu.link}
+                        prefetch={false}
                         className={`hover:bg-lime-400 ${menu.margin && "mt-7"} group flex items-center text-sm  gap-3.5 font-medium p-2 rounded-md ${pathname === menu.link && "bg-lime-400"}`}
                     >
                         <div>

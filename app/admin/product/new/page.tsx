@@ -1,6 +1,6 @@
 import React from "react";
 
-import AddProduct from "@/app/components/admin/AddProduct";
+import AddProduct from "@/app/components/admin/Form/AddProductForm";
 
 const AddProductPage = () => {
     return (

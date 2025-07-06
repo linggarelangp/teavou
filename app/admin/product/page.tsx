@@ -1,17 +1,35 @@
-import React from "react";
 import Link from "next/link";
+import React, { JSX } from "react";
 
-import TableClient from "@/app/components/table/TableClient";
+import { IProduct, ProductData } from "@/app/types/product";
+import { getProducts } from "@/app/services/productServices";
 
-import { getProductData } from "@/app/ssg";
-import { ProductColumn } from "@/app/libs/utils/columns";
+import TableProduct from "@/app/components/admin/Table/TableProduct";
 
-const ProductPage = async () => {
-    const products = await getProductData(0);
+const Product = async (): Promise<JSX.Element> => {
+    const productRaw = await getProducts();
+
+    const raw = JSON.parse(JSON.stringify(productRaw || []));
+
+    const products: ProductData[] = raw.map((product: IProduct) => ({
+        ID: product._id,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        image: product.imageUrl,
+        createdAt: new Date(product.createdAt || ""),
+        updatedAt: new Date(product.updatedAt || ""),
+    }));
+
+    const productColumns = Object.keys(products[0]).map((key) => ({
+        header: key.charAt(0).toUpperCase() + key.slice(1),
+        accessor: key as keyof typeof products[0],
+    }));
+
     return (
         <div className="w-full">
             <div className="mb-6 p-4 bg-white shadow rounded-lg">
-                <h1 className="text-2xl font-semibold mb-4">Products</h1>
+                <h1 className="text-2xl font-semibold mb-4">Product</h1>
                 <p className="text-sm text-gray-500 mb-4">Manage your products here.</p>
             </div>
 
@@ -24,11 +42,15 @@ const ProductPage = async () => {
                 </Link>
             </div>
 
-            <TableClient columns={ProductColumn} data={products} />
-
+            <div className="mb-6">
+                <TableProduct<ProductData>
+                    columns={productColumns}
+                    data={products}
+                    itemsPerPage={5}
+                />
+            </div>
         </div>
-
     );
 };
 
-export default ProductPage;
+export default Product;

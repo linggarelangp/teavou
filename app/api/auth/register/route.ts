@@ -1,20 +1,24 @@
-import { Response } from "@/app/libs";
-import { UserPayload } from "@/app/types";
 import { NextResponse } from "next/server";
-import ApiError from "@/app/libs/api.error";
-import { register } from "@/app/services/auth.services";
 
-export const POST = async (req: Request): Promise<NextResponse> => {
+import { ApiError } from "@/app/libs";
+import { createUser } from "@/app/services";
+import { IUser } from "@/app/types";
+
+export const POST = async (request: Request): Promise<NextResponse> => {
     try {
-        const { name, email, password, role = "user" } = await req.json();
+        const { name, email, password, role = "user" } = await request.json();
 
-        const payload: UserPayload = { name, email, password, role };
+        const user: IUser = { name, email, password, role };
 
-        await register(payload);
-        return Response({ status: 201, message: "Account Created" });
+        const created: IUser = await createUser(user);
+        return NextResponse.json({ success: true, status: 201, data: created }, { status: 201 });
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Something went wrong";
-        if (error instanceof ApiError) return Response({ status: error.status, message: message });
-        return Response({ status: 500, message: message });
+
+        if (error instanceof ApiError) {
+            return NextResponse.json({ success: false, status: error.status, error: message }, { status: error.status });
+        }
+
+        return NextResponse.json({ success: false, status: 500, error: message }, { status: 500 });
     };
 };

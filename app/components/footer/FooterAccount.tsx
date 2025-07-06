@@ -1,9 +1,7 @@
 import { JSX } from "react";
-
-import { FooterListData } from "@/app/types/footer";
 import Link from "next/link";
 
-const footerAccountList: FooterListData[] = [
+const footerAccountList: { name: string, link: string }[] = [
     {
         name: "My Account",
         link: "#",
@@ -28,7 +26,7 @@ const FooterAccount = (): JSX.Element => {
             <h4 className="text-2xl pb-2 lg:pb-5">Account</h4>
 
             <ul className="space-y-2 text-gray-300">
-                {footerAccountList.map((item: FooterListData, index: number) => (
+                {footerAccountList.map((item, index: number) => (
                     <li
                         key={index}
                         className="font-extralight hover:text-white"
