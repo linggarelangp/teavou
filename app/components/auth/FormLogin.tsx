@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { FaEnvelope, FaKey } from "react-icons/fa6";
 
 import { IUser } from "@/app/types";
-import AuthInput from "@/app/components/Input/AuthInput";
+import { AuthInput } from "@/app/components/Input";
 
 type ResponseData = {
     success: boolean;

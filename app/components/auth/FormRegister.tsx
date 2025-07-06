@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { IoPersonOutline } from "react-icons/io5";
 import { FaEnvelope, FaKey } from "react-icons/fa6";
 
-import AuthInput from "@/app/components/Input/AuthInput";
+import { AuthInput } from "@/app/components/Input";
 
 
 const FormRegister = (): JSX.Element => {
