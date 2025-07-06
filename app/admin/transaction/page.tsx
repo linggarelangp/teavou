@@ -17,31 +17,27 @@ interface TransactionData {
 const Transaction = async (): Promise<JSX.Element> => {
     const transactionRaw = await getTransactions();
 
-    if (!transactionRaw || transactionRaw.length === 0) {
-        return (
-            <div className="w-full p-4 bg-white shadow rounded-lg">
-                <h1 className='text-2xl font-semibold mb-4'>Transaction</h1>
-                <h1 className='text-sm text-gray-500 mb-4'>No transactions found.</h1>
-            </div>
-        )
-    }
-
     const raw = JSON.parse(JSON.stringify(transactionRaw || []));
 
-    const transactions: TransactionData[] = raw.map((t: ITransaction) => ({
-        orderId: t.orderId.toString(),
-        userId: t.userId,
-        totalItems: Number(t.items.length),
-        amount: t.amount,
-        status: t.status,
-        createdAt: t.createdAt ? new Date(t.createdAt) : "",
-        updatedAt: t.updatedAt ? new Date(t.updatedAt) : "",
-    }))
+    let transactions: TransactionData[] = [];
+    let transactionColumns: { header: string; accessor: keyof TransactionData; }[] = [];
 
-    const transactionColumns = Object.keys(transactions[0]).map((key) => ({
-        header: key.charAt(0).toUpperCase() + key.slice(1),
-        accessor: key as keyof typeof transactions[0],
-    }));
+    if (raw.length !== 0) {
+        transactions = raw.map((t: ITransaction) => ({
+            orderId: t.orderId.toString(),
+            userId: t.userId,
+            totalItems: Number(t.items.length),
+            amount: t.amount,
+            status: t.status,
+            createdAt: t.createdAt ? new Date(t.createdAt) : "",
+            updatedAt: t.updatedAt ? new Date(t.updatedAt) : "",
+        }))
+
+        transactionColumns = Object.keys(transactions[0]).map((key) => ({
+            header: key.charAt(0).toUpperCase() + key.slice(1),
+            accessor: key as keyof typeof transactions[0],
+        }));
+    }
     return (
         <div className="w-full">
             <div className='mb-6 p-4 bg-white shadow rounded-lg'>
@@ -50,11 +46,17 @@ const Transaction = async (): Promise<JSX.Element> => {
             </div>
 
             <div className="mb-6">
-                <Table<TransactionData>
-                    columns={transactionColumns}
-                    data={transactions}
-                    itemsPerPage={10}
-                />
+                {raw.length >= 1 ? (
+                    <Table<TransactionData>
+                        columns={transactionColumns}
+                        data={transactions}
+                        itemsPerPage={10}
+                    />
+                ) : (
+                    <div className="text-center text-gray-500">
+                        <p>No transactions found.</p>
+                    </div>
+                )}
             </div>
         </div>
     );

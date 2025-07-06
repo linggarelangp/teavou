@@ -17,21 +17,28 @@ const User = async (): Promise<JSX.Element> => {
 
     const raw = JSON.parse(JSON.stringify(usersRaw || []));
 
-    const users: User[] = raw.map((user: IUser) => ({
-        ID: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role || "user",
-        createdAt: new Date(user.createdAt || ""),
-    }));
+    let users: User[] = [];
+    let userColumns: { header: string; accessor: keyof User }[] = [];
+    let employee: User[] = [];
+    let client: User[] = [];
 
-    const userColumns = Object.keys(users[0]).map((key) => ({
-        header: key.charAt(0).toUpperCase() + key.slice(1),
-        accessor: key as keyof typeof users[0],
-    }));
+    if (raw.length >= 0) {
+        users = raw.map((user: IUser) => ({
+            ID: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role || "user",
+            createdAt: new Date(user.createdAt || ""),
+        }));
 
-    const employee = users.filter((user) => user.role === "admin")
-    const client = users.filter((user) => user.role === "user");
+        userColumns = Object.keys(users[0]).map((key) => ({
+            header: key.charAt(0).toUpperCase() + key.slice(1),
+            accessor: key as keyof typeof users[0],
+        }));
+
+        employee = users.filter((user) => user.role === "admin")
+        client = users.filter((user) => user.role === "user");
+    }
 
     return (
         <div className="w-full">
@@ -40,24 +47,32 @@ const User = async (): Promise<JSX.Element> => {
                 <p className="text-sm text-gray-500 mb-4">User Management</p>
             </div>
 
-            <div className="mb-6">
-                <h1 className="text-2xl font-semibold mb-4">Employees</h1>
-                <Table<User>
-                    columns={userColumns}
-                    data={employee}
-                    itemsPerPage={5}
-                />
-            </div>
+            {raw.length >= 0 ? (
+                <>
+                    <div className="mb-6">
+                        <h1 className="text-2xl font-semibold mb-4">Employees</h1>
+                        <Table<User>
+                            columns={userColumns}
+                            data={employee}
+                            itemsPerPage={5}
+                        />
+                    </div>
 
+                    <div>
+                        <h1 className="text-2xl font-semibold mb-4">Customers</h1>
+                        <Table<User>
+                            columns={userColumns}
+                            data={client}
+                            itemsPerPage={5}
+                        />
+                    </div>
+                </>
 
-            <div>
-                <h1 className="text-2xl font-semibold mb-4">Customers</h1>
-                <Table<User>
-                    columns={userColumns}
-                    data={client}
-                    itemsPerPage={5}
-                />
-            </div>
+            ) : (
+                <div className="text-center text-gray-500">
+                    <p>No users found.</p>
+                </div>
+            )}
         </div>
     );
 };

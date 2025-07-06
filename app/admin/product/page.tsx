@@ -11,20 +11,26 @@ const Product = async (): Promise<JSX.Element> => {
 
     const raw = JSON.parse(JSON.stringify(productRaw || []));
 
-    const products: ProductData[] = raw.map((product: IProduct) => ({
-        ID: product._id,
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        image: product.imageUrl,
-        createdAt: new Date(product.createdAt || ""),
-        updatedAt: new Date(product.updatedAt || ""),
-    }));
+    let products: ProductData[] = [];
+    let productColumns: { header: string; accessor: keyof ProductData }[] = [];
 
-    const productColumns = Object.keys(products[0]).map((key) => ({
-        header: key.charAt(0).toUpperCase() + key.slice(1),
-        accessor: key as keyof typeof products[0],
-    }));
+    if (raw.length >= 0) {
+        products = raw.map((product: IProduct) => ({
+            ID: product._id,
+            name: product.name,
+            description: product.description,
+            price: product.price,
+            image: product.imageUrl,
+            createdAt: new Date(product.createdAt || ""),
+            updatedAt: new Date(product.updatedAt || ""),
+        }));
+
+        productColumns = Object.keys(products[0]).map((key) => ({
+            header: key.charAt(0).toUpperCase() + key.slice(1),
+            accessor: key as keyof typeof products[0],
+        }));
+    }
+
 
     return (
         <div className="w-full">
@@ -43,11 +49,17 @@ const Product = async (): Promise<JSX.Element> => {
             </div>
 
             <div className="mb-6">
-                <TableProduct<ProductData>
-                    columns={productColumns}
-                    data={products}
-                    itemsPerPage={5}
-                />
+                {raw.length >= 0 ? (
+                    <TableProduct<ProductData>
+                        columns={productColumns}
+                        data={products}
+                        itemsPerPage={5}
+                    />
+                ) : (
+                    <div className="text-center text-gray-500">
+                        <p>No products found.</p>
+                    </div>
+                )}
             </div>
         </div>
     );
