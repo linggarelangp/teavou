@@ -8,7 +8,10 @@ type OrderFooterProps = {
 
 const OrderFooter = ({ amount, createdAt }: OrderFooterProps): JSX.Element => {
     const date = new Date(createdAt).toLocaleDateString("id-ID", {
-        day: "numeric", month: "short", year: "numeric"
+        timeZone: "Asia/Jakarta",
+        day: "numeric",
+        month: "short",
+        year: "numeric",
     });
 
     return (
