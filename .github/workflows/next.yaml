@@ -19,6 +19,7 @@ jobs:
     env:
       NEXT_API_MONGODB_URI: ${{ secrets.NEXT_API_MONGODB_URI }}
       NEXT_PUBLIC_BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
+      NEXT_API_JWT_SECRET_TOKEN: ${{ secrets.NEXT_API_JWT_SECRET_TOKEN }}
 
     steps:
       - uses: actions/checkout@v3
