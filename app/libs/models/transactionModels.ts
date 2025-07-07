@@ -7,6 +7,7 @@ const TransactionItemSchema = new Schema<ITransactionItem>({
     price: Number,
     quantity: Number,
     subtotal: Number,
+    imageUrl: String,
 });
 
 const TransactionSchema = new Schema<ITransaction>({

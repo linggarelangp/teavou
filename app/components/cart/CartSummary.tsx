@@ -49,20 +49,28 @@ const CartSummary = ({ cart, onCheckout, }: CartSummaryProps): JSX.Element => {
                 <React.Fragment>
                     <Link
                         href="/product"
-                        className="btn bg-transparent border-orange-600 hover:bg-orange-600 text-white w-full mt-4 mb-2 rounded-2xl shadow"
+                        className="btn bg-transparent border-orange-600 hover:bg-orange-600 text-black dark:text-white hover:text-white w-full mt-4 rounded-2xl shadow mb-2"
 
                     >
                         Continue Shopping
                     </Link>
 
                     <button
-                        className="btn bg-lime-500 hover:bg-lime-600 text-white w-full rounded-2xl shadow"
+                        className="btn py-1 bg-lime-500 hover:bg-lime-600 text-white w-full rounded-2xl shadow"
                         onClick={onCheckout}
                     >
                         Checkout
                     </button>
                 </React.Fragment>
             )}
+
+            <Link
+                href="/product"
+                className="btn bg-red-600 hover:bg-red-800 text-white w-full mt-4 mb-2 rounded-2xl shadow"
+
+            >
+                Back
+            </Link>
         </div>
 
     );

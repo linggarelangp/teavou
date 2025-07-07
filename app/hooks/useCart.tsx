@@ -10,6 +10,7 @@ type CartContextType = {
     addToCart: (item: Partial<any>) => void;
     updateQty: (productId: string, newQty: number) => void;
     removeFromCart: (productId: string) => void;
+    handlePaymentSuccess: () => void;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -62,11 +63,16 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         saveCart(updatedCart);
     };
 
+    const handlePaymentSuccess = () => {
+        localStorage.removeItem("cart");
+        setCart([]);
+    };
+
     const totalQty = cart.reduce((acc, item) => acc + (item.qty || 1), 0);
 
     return (
         <CartContext.Provider
-            value={{ cart, totalQty, addToCart, updateQty, removeFromCart }}
+            value={{ cart, totalQty, addToCart, updateQty, removeFromCart, handlePaymentSuccess }}
         >
             {children}
         </CartContext.Provider>

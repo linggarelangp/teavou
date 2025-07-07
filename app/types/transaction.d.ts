@@ -7,6 +7,7 @@ export interface ITransactionItem {
     price: number;
     quantity: number;
     subtotal: number;
+    imageUrl: string;
 };
 
 export interface ITransaction {

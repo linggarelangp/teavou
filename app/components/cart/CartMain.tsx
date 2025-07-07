@@ -1,15 +1,17 @@
 "use client";
 
 import { JSX, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 import { UserPayload } from "@/app/types";
 import { useCart } from "@/app/hooks/useCart";
 import { ITransactionItem } from "@/app/types/transaction";
 import { CartList, CartSummary } from "@/app/components/cart";
+import Swal from "sweetalert2";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 declare global {
     interface Window {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         snap: any;
     }
 }
@@ -21,7 +23,8 @@ type ResponseData = {
 }
 
 const CartMain = ({ user }: { user: UserPayload }): JSX.Element => {
-    const { cart, updateQty } = useCart();
+    const { cart, updateQty, handlePaymentSuccess } = useCart();
+    const router = useRouter();
 
     useEffect(() => {
         const snapScript = "https://app.sandbox.midtrans.com/snap/snap.js";
@@ -52,6 +55,7 @@ const CartMain = ({ user }: { user: UserPayload }): JSX.Element => {
             name: item.name as string,
             price: Number(item.price),
             quantity: Number(item.qty),
+            imageUrl: item.imageUrl as string,
         }));
 
         const dataTransaction = {
@@ -75,7 +79,30 @@ const CartMain = ({ user }: { user: UserPayload }): JSX.Element => {
             return;
         }
 
-        window.snap.pay(responseData.token)
+        window.snap.pay(responseData.token, {
+            onSuccess: () => {
+                handlePaymentSuccess();
+                router.push("/orders");
+            },
+            onPending: () => {
+                router.push("/");
+            },
+            onError: () => {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Terjadi kesalahan saat memproses pembayaran. Silakan coba lagi.",
+                    confirmButtonColor: "#d33",
+                    allowOutsideClick: false,
+                }).then(() => {
+                    router.push("/cart");
+                });
+            },
+            onClose: () => {
+                handlePaymentSuccess();
+                router.push("/orders");
+            },
+        });
     };
 
     return (

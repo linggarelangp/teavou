@@ -33,6 +33,21 @@ export const getTransactions = async (): Promise<ITransaction[]> => {
     };
 };
 
+export const getTransactionByUserId = async (userId: string): Promise<ITransaction[]> => {
+    try {
+        await connection();
+
+        const transactions = await Transaction.find({ userId }).lean();
+
+        return transactions.map(transaction => transaction) || [];
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Something went wrong";
+
+        if (error instanceof ApiError) throw new ApiError(error.status, message);
+        throw new Error(message);
+    }
+};
+
 export const updateTransaction = async (_id: string, updateData: ITransaction): Promise<ITransaction> => {
     try {
         await connection();
@@ -50,4 +65,40 @@ export const updateTransaction = async (_id: string, updateData: ITransaction): 
         if (error instanceof ApiError) throw new ApiError(error.status, message);
         throw new Error(message);
     };
+};
+
+export const updateTransactionStatus = async (orderId: string, midtransStatus: string): Promise<ITransaction> => {
+    let status = "pending";
+
+    try {
+        await connection();
+
+        const updatedTransaction = await Transaction.findOne({ orderId });
+
+        if (!updatedTransaction) throw new ApiError(404, "Transaction not found");
+
+        switch (midtransStatus) {
+            case "settlement":
+                status = "success";
+                break;
+            case "pending":
+                status = "pending";
+                break;
+            default:
+                status = "failed";
+                break;
+        }
+
+        updatedTransaction.status = status;
+        await updatedTransaction.save();
+
+        return updatedTransaction;
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Something went wrong";
+
+        if (error instanceof ApiError) throw new ApiError(error.status, message);
+        throw new Error(message);
+
+    };
+
 };

@@ -20,7 +20,7 @@ const ProductPage = async (): Promise<JSX.Element> => {
         name: product.name,
         description: product.description,
         price: product.price,
-        image: product.imageUrl,
+        imageUrl: product.imageUrl,
         createdAt: new Date(product.createdAt || ""),
         updatedAt: new Date(product.updatedAt || ""),
     }));

@@ -50,7 +50,7 @@ const ProductCard = ({ user, product, onAddToCart }: ProductCardProps): JSX.Elem
         <div className="card bg-base-100 shadow-md hover:shadow-lg transition duration-200">
             <figure>
                 <Image
-                    src={product.image}
+                    src={product.imageUrl}
                     alt={product.name}
                     width={300}
                     height={300}
@@ -65,11 +65,11 @@ const ProductCard = ({ user, product, onAddToCart }: ProductCardProps): JSX.Elem
                 <div className="w-full card-actions justify-between flex-col lg:flex-row items-center mt-4">
                     <div className="text-start">
                         <p className="relative text-red-500 text-sm lg:text-base italic custom-strike">
-                            IDR <span>{fakeOriginalPrice.toLocaleString()}</span>
+                            IDR {fakeOriginalPrice.toLocaleString()}
                         </p>
 
                         <p className="text-start text-lime-600 text-base lg:text-xl font-semibold">
-                            IDR <span>{product.price.toLocaleString()}</span>
+                            IDR {product.price.toLocaleString()}
                         </p>
                     </div>
                     <button

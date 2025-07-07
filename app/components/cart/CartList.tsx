@@ -28,7 +28,7 @@ const CartList = ({ cart, onQuantityChange, }: CartListProps): JSX.Element => {
                         name={item.name}
                         price={item.price}
                         qty={item.qty}
-                        image={item.image}
+                        image={item.imageUrl}
                         onQuantityChange={onQuantityChange}
                     />
                 ))

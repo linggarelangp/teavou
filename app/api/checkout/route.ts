@@ -9,7 +9,7 @@ export const POST = async (request: Request): Promise<NextResponse> => {
     try {
         const { userId, name, email, items } = await request.json();
 
-        if (!userId || !name || !email || !items || items.length === 0) {
+        if (!userId || !name || !email || !items || items.length === 0 || !Array.isArray(items) || items.some(item => !item._id || !item.name || !item.price || !item.quantity || !item.imageUrl)) {
             return NextResponse.json({ success: false, status: 400, error: "Invalid input data" }, { status: 400 });
         };
 
@@ -44,12 +44,14 @@ export const POST = async (request: Request): Promise<NextResponse> => {
             orderId,
             userId,
             items: items.map((item: ITransactionItem) => ({
-                productId: item._id,
+                productId: String(item._id),
                 name: item.name,
                 price: item.price,
                 quantity: item.quantity,
-                subtotal: item.price * item.quantity
+                subtotal: item.price * item.quantity,
+                imageUrl: item.imageUrl
             })),
+
             amount: totalAmount,
             status: "pending",
             snapToken: midtransRes.token,

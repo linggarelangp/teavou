@@ -1,8 +1,8 @@
 import { User } from "@/app/libs/models/userModels";
 import { connection } from "@/app/libs/database/connection";
 
-import { ApiError } from "@/app/libs";
 import { IUser } from "@/app/types";
+import { ApiError } from "@/app/libs";
 import { comparePassword, hashPassword } from "@/app/libs/node";
 
 export const createUser = async (data: IUser): Promise<IUser> => {

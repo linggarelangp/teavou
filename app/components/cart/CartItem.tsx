@@ -15,7 +15,7 @@ type CartItemProps = {
 
 const CartItem = ({ ID, name, price, qty, image, onQuantityChange, }: CartItemProps): JSX.Element => {
     return (
-        <div className="card card-side bg-base-100 shadow mb-4">
+        <div className="card card-side bg-base-100 shadow-lg mb-4">
             <figure>
                 <Image
                     src={image}

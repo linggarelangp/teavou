@@ -10,8 +10,8 @@ const dropdownData: { href: string, label: string, isLogout?: boolean }[] = [
         label: "Profile",
     },
     {
-        href: "/#",
-        label: "Settings",
+        href: "/orders",
+        label: "My Orders",
     },
     {
         href: "/logout",
