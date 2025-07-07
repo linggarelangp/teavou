@@ -3,13 +3,17 @@
 import Swal from "sweetalert2";
 import { JSX, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useCart } from "@/app/hooks/useCart";
 
 type PayNowButtonProps = {
     snapToken: string;
 };
 
 const PayNowButton = ({ snapToken }: PayNowButtonProps): JSX.Element => {
+
+    const { handlePaymentSuccess } = useCart();
     const router = useRouter();
+
     useEffect(() => {
         const snapScript = "https://app.sandbox.midtrans.com/snap/snap.js";
         const clientKey = process.env.NEXT_MIDTRANS_CLIENT_KEY! as string;
@@ -30,6 +34,7 @@ const PayNowButton = ({ snapToken }: PayNowButtonProps): JSX.Element => {
         if (window.snap) {
             window.snap.pay(snapToken, {
                 onSuccess: () => {
+                    handlePaymentSuccess();
                     router.push("/orders");
                 },
                 onPending: () => {
@@ -43,6 +48,7 @@ const PayNowButton = ({ snapToken }: PayNowButtonProps): JSX.Element => {
                         confirmButtonColor: "#d33",
                         allowOutsideClick: false,
                     }).then(() => {
+                        handlePaymentSuccess();
                         router.push("/cart");
                     });
                 },
