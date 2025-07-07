@@ -1,8 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import Swal from "sweetalert2";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const Logout = (): void => {
     const router = useRouter();
@@ -25,7 +25,7 @@ const Logout = (): void => {
         };
 
         logout();
-    }, []);
+    }, [router]);
 };
 
 export default Logout;

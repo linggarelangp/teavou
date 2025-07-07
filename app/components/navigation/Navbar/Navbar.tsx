@@ -1,8 +1,8 @@
 import { JSX } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { getUserFromToken } from "@/app/libs/node/auth";
 
+import { getUserFromToken } from "@/app/libs/node/auth";
 import { NavAuth, NavbarList, NavbarCollapse } from "@/app/components/navigation";
 
 const navbarList: { path: string; name: string; }[] = [

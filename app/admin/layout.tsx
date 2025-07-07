@@ -2,7 +2,6 @@ import { Metadata } from "next";
 import React, { JSX } from "react";
 
 import { Sidebar } from "@/app/components/navigation";
-
 import { getUserFromToken } from "@/app/libs/node/auth";
 
 type Children = Readonly<{ children: React.ReactNode }>;

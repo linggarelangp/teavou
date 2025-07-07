@@ -8,6 +8,7 @@ import { useCart } from "@/app/hooks/useCart";
 
 const CartIcon = (): JSX.Element => {
     const { totalQty } = useCart();
+
     return (
         <Link
             href="/cart"

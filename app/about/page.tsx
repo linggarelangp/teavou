@@ -1,7 +1,7 @@
 import { JSX } from "react";
 
-import { Navbar } from "@/app/components/navigation";
 import { Footer } from "@/app/components/Footer";
+import { Navbar } from "@/app/components/navigation";
 
 const About = (): JSX.Element => {
     return (
@@ -9,6 +9,7 @@ const About = (): JSX.Element => {
             <header>
                 <Navbar />
             </header>
+
             <main>
                 <section className="container mx-auto px-4 py-8">
                     <div className="bg-lightgrey" id="blog-section">
@@ -51,8 +52,9 @@ const About = (): JSX.Element => {
                             </div>
                         </div>
                     </div>
-                </section >
-            </main >
+                </section>
+            </main>
+
             <footer>
                 <Footer />
             </footer>

@@ -1,13 +1,13 @@
 import Link from "next/link";
 import React, { JSX } from "react";
 
-import { IProduct, ProductData } from "@/app/types/product";
+import { IProduct, ProductData } from "@/app/types";
 import { getProducts } from "@/app/services/productServices";
 
 import TableProduct from "@/app/components/admin/Table/TableProduct";
 
 const Product = async (): Promise<JSX.Element> => {
-    const productRaw = await getProducts();
+    const productRaw: IProduct[] = await getProducts();
 
     const raw = JSON.parse(JSON.stringify(productRaw || []));
 
@@ -30,7 +30,6 @@ const Product = async (): Promise<JSX.Element> => {
             accessor: key as keyof typeof products[0],
         }));
     }
-
 
     return (
         <div className="w-full">

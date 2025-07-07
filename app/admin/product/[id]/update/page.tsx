@@ -2,7 +2,7 @@ import { JSX } from "react";
 import { notFound } from "next/navigation";
 
 import { getProductById } from "@/app/services"
-import UpdateProductForm from "@/app/components/admin/Form/UpdateProductForm";
+import { UpdateProductForm } from "@/app/components/admin/Form";
 
 type Params = Promise<{ id: string }>
 

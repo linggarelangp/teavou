@@ -6,14 +6,15 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 
 
+import { IProduct } from "@/app/types";
 import { Input, Textarea, CustomImageUpload } from "@/app/components/Input"
-import { IProduct } from "@/app/types/product";
 
 type FormValues = {
     name: string;
     description?: string;
     price: number;
 };
+
 const AddProductForm = (): JSX.Element => {
     const router = useRouter();
     const [file, setFile] = useState<File | null>(null);

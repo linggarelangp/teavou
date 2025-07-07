@@ -1,6 +1,6 @@
 import { JSX } from "react";
-import { getUserFromToken } from "@/app/libs/node/auth";
 import { redirect } from "next/navigation";
+import { getUserFromToken } from "@/app/libs/node";
 
 const Dashboard = async (): Promise<JSX.Element> => {
     const admin = await getUserFromToken({ requiredRole: "admin" });

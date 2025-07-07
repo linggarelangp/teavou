@@ -1,5 +1,6 @@
 "use client";
 
+import Swal from "sweetalert2";
 import { JSX, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
@@ -7,7 +8,6 @@ import { UserPayload } from "@/app/types";
 import { useCart } from "@/app/hooks/useCart";
 import { ITransactionItem } from "@/app/types/transaction";
 import { CartList, CartSummary } from "@/app/components/cart";
-import Swal from "sweetalert2";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 declare global {

@@ -3,9 +3,9 @@
 import Swal from "sweetalert2";
 import React, { JSX } from "react";
 
-import { Table } from "@/app/components/Table";
 import { useRouter } from "next/navigation";
-import { ProductData } from "@/app/types/product";
+import { Table } from "@/app/components/Table";
+import { ProductData } from "@/app/types";
 
 interface TableProductProps<T> {
   data: T[];

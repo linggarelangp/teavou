@@ -1,7 +1,8 @@
 import React, { JSX } from "react";
 import { redirect } from "next/navigation";
+
 import { CartMain } from "@/app/components/cart";
-import { getUserFromToken } from "@/app/libs/node/auth";
+import { getUserFromToken } from "@/app/libs/node";
 
 const CartPage = async (): Promise<JSX.Element> => {
     const user = await getUserFromToken();

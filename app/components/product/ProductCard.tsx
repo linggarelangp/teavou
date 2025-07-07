@@ -1,15 +1,13 @@
 "use client";
 
-import Image from "next/image";
 import Swal from "sweetalert2";
-import React, { JSX, useMemo } from "react";
+import Image from "next/image";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import React, { JSX, useMemo } from "react";
 import { CiShoppingCart } from "react-icons/ci";
 
-import { UserPayload } from "@/app/types";
-import { ProductData } from "@/app/types/product";
-
+import { ProductData, UserPayload } from "@/app/types";
 interface ProductCardProps {
     user: UserPayload | null;
     product: ProductData;

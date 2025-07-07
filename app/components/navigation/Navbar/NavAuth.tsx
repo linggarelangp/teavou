@@ -1,11 +1,11 @@
 "use client";
 
-import React, { JSX } from "react";
 import Link from "next/link";
+import React, { JSX } from "react";
 
-import CartIcon from "@/app/components/Icon/CartIcon";
-import UserDropdown from "@/app/components/Dropdown/UserDropdown";
 import { UserPayload } from "@/app/types";
+import { CartIcon } from "@/app/components/Icon";
+import UserDropdown from "@/app/components/Dropdown/UserDropdown";
 
 const NavAuth = ({ token }: { token: UserPayload | null }): JSX.Element => {
 

@@ -1,8 +1,8 @@
 "use client";
 
+import { JSX } from "react";
 import Image from "next/image";
 import { CartQuantitySelector } from "@/app/components/cart";
-import { JSX } from "react";
 
 type CartItemProps = {
     ID: string;

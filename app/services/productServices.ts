@@ -2,7 +2,7 @@ import { ApiError } from "@/app/libs";
 import { destroy, uploads } from "@/app/libs/node";
 import { Product } from "@/app/libs/models/productModels";
 import { connection } from "@/app/libs/database/connection";
-import { IProduct, CreateProductPayload, UpdateProductPayload } from "@/app/types/product";
+import { IProduct, CreateProductPayload, UpdateProductPayload } from "@/app/types";
 
 export const createProduct = async (payload: CreateProductPayload): Promise<IProduct> => {
     try {

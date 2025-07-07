@@ -1,7 +1,6 @@
 import Image from "next/image";
 import React, { JSX } from "react";
 
-
 import { Footer } from "@/app/components/Footer";
 import { Navbar } from "@/app/components/navigation";
 

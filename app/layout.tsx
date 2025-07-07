@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Poppins, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { CartProvider } from "./hooks/useCart";
+
+import { CartProvider } from "@/app/hooks/useCart";
 
 type Children = Readonly<{ children: React.ReactNode }>;
 

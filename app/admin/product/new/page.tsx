@@ -1,6 +1,6 @@
 import React from "react";
 
-import AddProduct from "@/app/components/admin/Form/AddProductForm";
+import { AddProductForm } from "@/app/components/admin/Form";
 
 const AddProductPage = () => {
     return (
@@ -9,7 +9,7 @@ const AddProductPage = () => {
                 <h1 className="text-2xl font-semibold mb-4">Add Product</h1>
             </div>
 
-            <AddProduct />
+            <AddProductForm />
         </div>
     )
 };

@@ -3,8 +3,8 @@
 import Link from "next/link";
 import React, { JSX, useMemo } from "react";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 type CartSummaryProps = {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cart: any[];
     onCheckout: () => void;
 };

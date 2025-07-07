@@ -5,7 +5,7 @@ import { JSX, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 
-import { IProduct } from "@/app/types/product";
+import { IProduct } from "@/app/types";
 import { Input, Textarea, CustomImageUpload } from "@/app/components/Input"
 
 type FormValues = {

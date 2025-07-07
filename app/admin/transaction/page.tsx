@@ -1,7 +1,8 @@
 import { JSX } from "react";
-import { getTransactions } from "@/app/services";
-import { ITransaction } from "@/app/types/transaction";
+
+import { ITransaction } from "@/app/types";
 import { Table } from "@/app/components/Table";
+import { getTransactions } from "@/app/services";
 
 interface TransactionData {
     orderId: string;
@@ -15,7 +16,7 @@ interface TransactionData {
 }
 
 const Transaction = async (): Promise<JSX.Element> => {
-    const transactionRaw = await getTransactions();
+    const transactionRaw: ITransaction[] = await getTransactions();
 
     const raw = JSON.parse(JSON.stringify(transactionRaw || []));
 
