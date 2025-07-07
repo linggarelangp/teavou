@@ -38,7 +38,8 @@ const PayNowButton = ({ snapToken }: PayNowButtonProps): JSX.Element => {
                     router.push("/orders");
                 },
                 onPending: () => {
-                    router.push("/");
+                    handlePaymentSuccess();
+                    router.push("/orders");
                 },
                 onError: () => {
                     Swal.fire({
@@ -48,7 +49,6 @@ const PayNowButton = ({ snapToken }: PayNowButtonProps): JSX.Element => {
                         confirmButtonColor: "#d33",
                         allowOutsideClick: false,
                     }).then(() => {
-                        handlePaymentSuccess();
                         router.push("/cart");
                     });
                 },
