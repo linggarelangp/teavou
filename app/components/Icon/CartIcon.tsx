@@ -16,7 +16,7 @@ const CartIcon = (): JSX.Element => {
             aria-label="Cart"
             className="relative"
         >
-            <FaCartShopping className="text-2xl lg:text-xl text-lime-400" />
+            <FaCartShopping className="text-xl lg:text-2xl text-lime-400" />
             {totalQty > 0 && (
                 <span className="absolute -top-[6px] -right-2 bg-orange-400 text-white pl-0.5 text-[10px] w-4 h-4 flex items-center justify-center rounded-full">{totalQty}</span>
             )}

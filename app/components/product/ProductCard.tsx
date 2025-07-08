@@ -45,7 +45,7 @@ const ProductCard = ({ user, product, onAddToCart }: ProductCardProps): JSX.Elem
     };
 
     return (
-        <div className="card bg-base-100 shadow-md hover:shadow-lg transition duration-200">
+        <div className="card bg-zinc-950 shadow-md hover:shadow-lg transition duration-200">
             <figure>
                 <Image
                     src={product.imageUrl}
@@ -56,10 +56,12 @@ const ProductCard = ({ user, product, onAddToCart }: ProductCardProps): JSX.Elem
                 />
             </figure>
             <div className="card-body items-center text-center">
-                <h2 className="card-title text-gray-600">{product.name}</h2>
-                <p className="text-sm text-gray-500 line-clamp-2 max-w-xs">
+                <h2 className="card-title">{product.name}</h2>
+
+                <p className="text-sm text-gray-400 line-clamp-2 max-w-xs">
                     {product.description}
                 </p>
+
                 <div className="w-full card-actions justify-between flex-col lg:flex-row items-center mt-4">
                     <div className="text-start">
                         <p className="relative text-red-500 text-sm lg:text-base italic custom-strike">

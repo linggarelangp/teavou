@@ -10,19 +10,19 @@ import UserDropdown from "@/app/components/Dropdown/UserDropdown";
 const NavAuth = ({ token }: { token: UserPayload | null }): JSX.Element => {
 
     return !token ? (
-        <div className="mt-3 lg:mt-0">
+        <div className="mt-3 lg:mt-0 flex items-center justify-center gap-3">
             <Link
                 href={"/login"}
                 prefetch={false}
-                className="text-lg lg:text-sm text-gray-500 hover:text-lime-500 transition-colors duration-150 ease-in-out"
+                className="btn lg:btn-sm bg-lime-600 hover:bg-lime-700 rounded-box border-none shadow-none px-5 w-1/2 lg:w-auto"
             >
                 Login
             </Link>
-            <span className="mx-2 text-xl lg:text-sm text-lime-500">|</span>
+
             <Link
                 href={"/register"}
                 prefetch={false}
-                className="text-lg lg:text-sm text-gray-500 hover:text-lime-500 transition-colors duration-150 ease-in-out"
+                className="btn lg:btn-sm bg-transparent rounded-box border shadow-none px-5 w-1/2 lg:w-auto border-lime-600 text-lime-600 hover:text-white hover:bg-lime-600 py-2 transition-colors duration-300 ease-in-out"
             >
                 Register
             </Link>

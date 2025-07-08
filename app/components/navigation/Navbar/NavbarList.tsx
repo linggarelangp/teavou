@@ -2,13 +2,23 @@
 
 import { JSX } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+
+/**
+ * NavbarList component renders a list item with a link.
+ * It highlights the link based on the current path.
+ *
+ * @param {Object} props - The component props.
+ * @param {string} props.path - The path for the link.
+ * @param {string} props.name - The name to display in the link.
+ * @returns {JSX.Element} The rendered list item with a link.
+ */
+
 
 const NavbarList = ({ path, name }: { path: string, name: string }): JSX.Element => {
-    const pathname = usePathname();
+
     return (
         <li
-            className={`flex items-center p-1 gap-x-2 hover:text-lime-400 transition-colors duration-300 ease-in-out lg:p-2 text-lg lg:text-base ${path === pathname ? "text-lime-400" : "text-gray-500"}`}
+            className={`font-semibold flex items-center hover:text-lime-600 text-gray-300`}
         >
             <Link
                 href={path || "#"}

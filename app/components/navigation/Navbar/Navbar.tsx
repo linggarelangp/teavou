@@ -1,34 +1,46 @@
+"use client";
+
 import { JSX } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
-import { getUserFromToken } from "@/app/libs/node/auth";
+import { UserPayload } from "@/app/types";
 import { NavAuth, NavbarList, NavbarCollapse } from "@/app/components/navigation";
 
 const navbarList: { path: string; name: string; }[] = [
     {
-        path: "/",
+        path: "#home",
         name: "Home",
     },
     {
-        path: "/product",
-        name: "Product",
-    },
-    {
-        path: "/about",
+        path: "#about",
         name: "About",
     },
+    {
+        path: "#menu",
+        name: "Menu",
+    },
+    {
+        path: "#",
+        name: "Contact",
+    },
+
 ];
 
-const Navbar = async (): Promise<JSX.Element> => {
-    const token = await getUserFromToken();
+
+type NavbarProps = {
+    token: UserPayload | null;
+};
+
+const Navbar = ({ token }: NavbarProps): JSX.Element => {
 
     return (
-        <nav className="block w-full px-4 py-3 mx-auto shadow-md rounded-md lg:px-8">
-            <div className="container flex flex-wrap items-center justify-between mx-auto">
+        <nav className="w-full fixed top-0 left-0 bg-black/80 backdrop-blur-md border-b border-gray-700 px-4 lg-px-0 py-4 z-10 rounded-lg lg:rounded-none">
+
+            <div className="max-w-4/5 mx-auto flex flex-wrap items-center justify-between">
                 <Link
                     href="/"
-                    className="hidden lg:block"
+                    className="hidden lg:block text-2xl"
                 >
                     <Image
                         src="/img/logo.png"
@@ -36,13 +48,15 @@ const Navbar = async (): Promise<JSX.Element> => {
                         data-testid="navbar-logo"
                         width={100}
                         height={100}
+                        priority
+                        className="w-24 h-auto m-0 p-0"
                     />
                 </Link>
 
                 <div className="hidden lg:block">
                     <ul
                         daa-testid="navbar-list"
-                        className="flex flex-col gap-2 mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6"
+                        className="flex flex-col mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center gap-4"
                     >
                         {navbarList.map((item, index: number) => (
                             <NavbarList
@@ -60,6 +74,7 @@ const Navbar = async (): Promise<JSX.Element> => {
             </div>
 
             <NavbarCollapse token={token} />
+
         </nav>
     );
 };

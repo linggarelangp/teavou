@@ -42,7 +42,7 @@ const UserDropdown = (): JSX.Element => {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={() => setOpen((prev) => !prev)}
-                className="text-2xl lg:text-xl text-lime-400 cursor-pointer"
+                className="text-xl lg:text-2xl text-lime-400 cursor-pointer"
             >
                 <FaUserLarge />
             </button>
@@ -54,7 +54,7 @@ const UserDropdown = (): JSX.Element => {
                             key={index}
                             href={item.href}
                             prefetch={false}
-                            className={`block px-4 py-2 text-sm text-gray-700 hover:bg-lime-400 rounded ${item.isLogout ? 'text-red-500 hover:bg-red-100' : ''}`}
+                            className={`block px-4 py-2 text-sm hover:bg-lime-600 rounded ${item.isLogout ? 'text-red-500 hover:bg-red-100' : ''}`}
                         >
                             {item.label}
                         </Link>
