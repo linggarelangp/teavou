@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import React, { JSX, useMemo } from "react";
+import React, { JSX, useEffect, useState } from "react";
 import { CiShoppingCart } from "react-icons/ci";
 
 import { ProductData, UserPayload } from "@/app/types";
@@ -16,9 +16,11 @@ interface ProductCardProps {
 
 const ProductCard = ({ user, product, onAddToCart }: ProductCardProps): JSX.Element => {
     const router = useRouter();
+    const [fakeOriginalPrice, setFakeOriginalPrice] = useState<number | null>(null);
 
-    const fakeOriginalPrice = useMemo(() => {
-        return product.price + Math.floor(Math.random() * (50000 - 10000 + 1)) + 10000;
+    useEffect(() => {
+        const randomValue = Math.floor(Math.random() * (50000 - 10000 + 1)) + 10000;
+        setFakeOriginalPrice(product.price + randomValue);
     }, [product.price]);
 
     const handleAddToCart = () => {
@@ -36,12 +38,29 @@ const ProductCard = ({ user, product, onAddToCart }: ProductCardProps): JSX.Elem
             return;
         }
 
+        if (user.role.includes("admin")) {
+            Swal.fire({
+                icon: "warning",
+                title: "Oops...",
+                text: "Admin gaboleh pesan ya!!",
+            })
+            return;
+        }
+
         toast.success(`${product.name} has been added to cart`, {
             position: "top-right",
             duration: 1000,
         });
 
         onAddToCart(product);
+    };
+
+    function formatCurrency(value: number): string {
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+        }).format(value);
     };
 
     return (
@@ -62,14 +81,16 @@ const ProductCard = ({ user, product, onAddToCart }: ProductCardProps): JSX.Elem
                     {product.description}
                 </p>
 
-                <div className="w-full card-actions justify-between flex-col lg:flex-row items-center mt-4">
+                <div className="w-full card-actions justify-between items-center mt-4">
                     <div className="text-start">
-                        <p className="relative text-red-500 text-sm lg:text-base italic custom-strike">
-                            IDR {fakeOriginalPrice.toLocaleString()}
-                        </p>
+                        {fakeOriginalPrice !== null && (
+                            <p className="relative text-red-500 text-sm lg:text-base italic custom-strike">
+                                IDR {formatCurrency(fakeOriginalPrice)}
+                            </p>
+                        )}
 
                         <p className="text-start text-lime-600 text-base lg:text-xl font-semibold">
-                            IDR {product.price.toLocaleString()}
+                            IDR {formatCurrency(product.price)}
                         </p>
                     </div>
                     <button

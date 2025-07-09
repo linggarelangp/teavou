@@ -3,6 +3,7 @@ import { JSX } from "react";
 import { ITransaction } from "@/app/types";
 import { Table } from "@/app/components/Table";
 import { getTransactions } from "@/app/services";
+import ButtonReport from "@/app/components/Button/ButtonReport";
 
 interface TransactionData {
     orderId: string;
@@ -41,12 +42,15 @@ const Transaction = async (): Promise<JSX.Element> => {
     }
     return (
         <div className="w-full">
-            <div className='mb-6 p-4 bg-white shadow rounded-lg'>
+            <div className='mb-6 p-4 bg-zinc-800 shadow rounded-lg'>
                 <h1 className='text-2xl font-semibold mb-4'>Transaction</h1>
                 <h1 className='text-sm text-gray-500 mb-4'>Show all transaction here...</h1>
             </div>
 
             <div className="mb-6">
+
+                <ButtonReport />
+
                 {raw.length >= 1 ? (
                     <Table<TransactionData>
                         columns={transactionColumns}

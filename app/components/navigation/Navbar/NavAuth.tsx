@@ -6,6 +6,7 @@ import React, { JSX } from "react";
 import { UserPayload } from "@/app/types";
 import { CartIcon } from "@/app/components/Icon";
 import UserDropdown from "@/app/components/Dropdown/UserDropdown";
+import { FaArrowRight } from "react-icons/fa6";
 
 const NavAuth = ({ token }: { token: UserPayload | null }): JSX.Element => {
 
@@ -29,8 +30,17 @@ const NavAuth = ({ token }: { token: UserPayload | null }): JSX.Element => {
         </div>
     ) : (
         <div className="flex items-center mt-5 lg:mt-0 justify-center lg:justify-around space-x-5 px-0 lg:px-7">
-            <CartIcon />
-            <UserDropdown />
+            {!token.role.includes("admin") ? (
+                <>
+                    <CartIcon />
+                    <UserDropdown />
+                </>
+            ) : (
+                <Link href={"/admin"} className="btn btn-sm border-none shadow-none bg-lime-600 flex items-center">
+                    Ke Admin
+                    <span><FaArrowRight /></span>
+                </Link>
+            )}
         </div>
     )
 }

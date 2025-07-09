@@ -3,9 +3,9 @@ import React, { JSX } from "react";
 const FooterDescription = (): JSX.Element => {
     return (
         <React.Fragment>
-            <h1 className="text-2xl pb-2 lg:pb-5">Why People Like Us!</h1>
+            <h3 className="text-2xl pb-2 lg:pb-5">Kenapa Orang Menyukai Kami</h3>
             <p className="text-gray-300 font-extralight text-justify">
-                Everyone loves us because we have different kinds of tea, especially green tea, black tea and also herbal tea and we also have different kinds of bread.
+                Semua orang menyukai kami karena kami mempunyai berbagai jenis teh, terutama teh hijau, teh hitam, dan juga teh herbal dan kami juga mempunyai berbagai jenis roti.
             </p>
         </React.Fragment>
     );

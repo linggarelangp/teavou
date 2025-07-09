@@ -28,9 +28,9 @@ const OrderItems = ({ items }: OrderItemProps): JSX.Element => {
 
                     <div className="text-sm sm:text-base">
                         <div className="font-medium">{item.name}</div>
-                        <div className="text-gray-600">
+                        <div className="">
                             Rp{item.price.toLocaleString("id-ID")} × {item.quantity} ={" "}
-                            <span className="font-semibold text-black">
+                            <span className="font-semibold">
                                 Rp{item.subtotal.toLocaleString("id-ID")}
                             </span>
                         </div>

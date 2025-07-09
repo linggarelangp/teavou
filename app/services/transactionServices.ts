@@ -102,3 +102,30 @@ export const updateTransactionStatus = async (orderId: string, midtransStatus: s
     };
 
 };
+
+export const downloadTransactionReports = async (): Promise<string> => {
+    try {
+        await connection();
+
+        const transactions = await Transaction.find().lean();
+        if (!transactions || transactions.length === 0) throw new ApiError(404, "No transactions found");
+
+        let csv = "Order ID,User ID,Status,Created At,Product Name,Qty,Price,Subtotal\n";
+
+        transactions.forEach(tx => {
+            tx.items.forEach(item => {
+                csv += `${tx.orderId},${tx.userId},${tx.status},${new Date(tx.createdAt!).toISOString()},${item.name},${item.quantity},${item.price},${item.subtotal}\n`;
+            });
+        });
+
+        console.log(transactions);
+
+        return transactions.length > 0 ? csv : "No transactions found";
+
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Something went wrong";
+
+        if (error instanceof ApiError) throw new ApiError(error.status, message);
+        throw new Error(message);
+    };
+};

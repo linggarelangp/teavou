@@ -14,11 +14,11 @@ export const metadata: Metadata = {
 export default async function AdminLayout({ children }: Children): Promise<JSX.Element> {
     const admin = await getUserFromToken({ requiredRole: "admin" });
     return (
-        <div className="flex h-screen">
+        <div className="flex min-h-screen">
             <aside className="h-screen overflow-hidden">
                 <Sidebar data={admin} />
             </aside>
-            <main className="flex-1 w-full h-screen p-10">
+            <main className="flex-1 w-full min-h-screen p-10">
                 {children}
             </main>
         </div>

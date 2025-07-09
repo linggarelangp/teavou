@@ -17,7 +17,7 @@ const OrderCard = ({ transaction }: OrderCardProps): JSX.Element => {
     };
 
     return (
-        <div className="bg-white rounded-xl shadow-lg p-5 border border-gray-200 space-y-3 relative">
+        <div className="bg-zinc-900 rounded-xl shadow-lg p-5 border border-zinc-800 space-y-3 relative">
             <OrderHeader
                 orderId={transaction.orderId}
                 status={transaction.status}

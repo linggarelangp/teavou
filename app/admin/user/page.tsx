@@ -42,7 +42,7 @@ const User = async (): Promise<JSX.Element> => {
 
     return (
         <div className="w-full">
-            <div className="mb-6 p-4 bg-white shadow rounded-lg">
+            <div className="mb-6 p-4 bg-zinc-800 shadow rounded-lg">
                 <h1 className="text-2xl font-semibold mb-4">Users</h1>
                 <p className="text-sm text-gray-500 mb-4">User Management</p>
             </div>

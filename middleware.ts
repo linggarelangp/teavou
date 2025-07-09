@@ -33,6 +33,10 @@ export const middleware = async (request: NextRequest): Promise<NextResponse> =>
                 response = await validateProductData(request, request.method === "POST" ? true : false);
                 return response;
             }
+            case pathname.startsWith("/api/transaction/download"): {
+                if (!admin) return NextResponse.json({ success: false, status: 401, message: "Unauthorized access" }, { status: 401 });
+                return NextResponse.next();
+            }
             // Admin Pages
             case pathname.startsWith("/admin"): {
                 if (!admin) return NextResponse.redirect(new URL("/", request.url));
@@ -42,6 +46,14 @@ export const middleware = async (request: NextRequest): Promise<NextResponse> =>
             case pathname.startsWith("/orders"): {
                 const user = await getUserFromToken();
                 if (!user) return NextResponse.redirect(new URL("/login", request.url));
+                if (user.role.includes("admin")) return NextResponse.redirect(new URL("/admin", request.url));
+                return NextResponse.next();
+            }
+            // Cart Pages
+            case pathname.startsWith("/cart"): {
+                const user = await getUserFromToken();
+                if (!user) return NextResponse.redirect(new URL("/login", request.url));
+                if (user.role.includes("admin")) return NextResponse.redirect(new URL("/admin", request.url));
                 return NextResponse.next();
             }
             // Default case for other API routes and pages
@@ -63,8 +75,11 @@ export const config = {
         "/api/user/:path*",
         "/api/product",
         "/api/product/:path*",
+        "/api/transaction/download",
         "/orders",
         "/orders/:path*",
+        "/cart",
+        "/cart/:path*",
         "/admin",
         "/admin/:path*"
     ]

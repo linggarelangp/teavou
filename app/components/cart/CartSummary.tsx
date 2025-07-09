@@ -48,7 +48,7 @@ const CartSummary = ({ cart, onCheckout, }: CartSummaryProps): JSX.Element => {
             {cart.length >= 1 && (
                 <React.Fragment>
                     <Link
-                        href="/product"
+                        href="/products"
                         className="btn bg-transparent border-orange-600 hover:bg-orange-600 text-black dark:text-white hover:text-white w-full mt-4 rounded-2xl shadow mb-2"
 
                     >
@@ -65,7 +65,7 @@ const CartSummary = ({ cart, onCheckout, }: CartSummaryProps): JSX.Element => {
             )}
 
             <Link
-                href="/product"
+                href="/"
                 className="btn bg-red-600 hover:bg-red-800 text-white w-full mt-4 mb-2 rounded-2xl shadow"
 
             >

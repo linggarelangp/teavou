@@ -11,9 +11,9 @@ const Dashboard = async (): Promise<JSX.Element> => {
 
     return (
         <div className="w-full">
-            <div className='mb-6 p-4 bg-white shadow rounded-lg'>
+            <div className='mb-6 p-4 bg-zinc-800 shadow rounded-lg'>
                 <h1 className='text-2xl font-semibold mb-4'>Dashboard</h1>
-                <h1 className='text-xl text-gray-500 mb-4'>Hi, {admin!.name}</h1>
+                <h1 className='text-xl mb-4'>Hi, {admin!.name}</h1>
             </div>
         </div>
     );

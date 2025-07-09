@@ -21,7 +21,7 @@ const navbarList: { path: string; name: string; }[] = [
         name: "Menu",
     },
     {
-        path: "#",
+        path: "#contact",
         name: "Contact",
     },
 
